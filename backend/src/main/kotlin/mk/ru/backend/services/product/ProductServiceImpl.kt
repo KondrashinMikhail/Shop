@@ -24,6 +24,7 @@ import mk.ru.backend.web.responses.product.ProductUpdateResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
@@ -55,38 +56,55 @@ class ProductServiceImpl(
         val login: String = AppUserInfo.getAuthenticatedLogin()
         val finalPageable = pageable ?: Pageable.unpaged()
 
-        val products: Page<Product> = when (showDeleted) {
-            null, false -> when (byOwner) {
-                null, false -> when (onlySelling) {
-                    null, false -> productRepo.findByDeletedFalse(finalPageable)
-                    true -> productRepo.findByDeletedFalseAndSellingTrue(finalPageable)
-                }
-
-                true -> when (onlySelling) {
-                    null, false -> productRepo.findByDeletedFalseAndOwnerLogin(login = login, pageable = finalPageable)
-                    true -> productRepo.findByDeletedFalseAndOwnerLoginAndSellingTrue(
-                        login = login,
-                        pageable = finalPageable
-                    )
-                }
+        val products: List<ProductInfoResponse> = productRepo.findAll()
+            .filter {
+                (byOwner ?: false && it.owner!!.login == login) &&
+                        (!(showDeleted ?: false) && it.deleted == false) &&
+                        (onlySelling ?: false && it.selling == true)
             }
+            .map { productMapper.toInfoResponse(it) }
 
-            true -> when (byOwner) {
-                null, false -> when (onlySelling) {
-                    null, false -> productRepo.findAll(finalPageable)
-                    true -> productRepo.findBySellingTrue(pageable = finalPageable)
-                }
+        val totalElements: Long = products.size.toLong()
 
-                true -> {
-                    when (onlySelling) {
-                        null, false -> productRepo.findByOwnerLogin(login = login, pageable = finalPageable)
-                        true -> productRepo.findByOwnerLoginAndSellingTrue(login = login, pageable = finalPageable)
-                    }
-                }
-            }
-        }
-        log.info("Found ${products.totalElements} of available ${if (showDeleted!!) "" else "and deleted"} products ${if (byOwner!!) "" else "and by owner '$login'"}")
-        return products.map { productMapper.toInfoResponse(it) }
+        log.info("Found $totalElements of available ${if (showDeleted!!) "" else "and deleted"} products ${if (byOwner!!) "" else "and by owner '$login'"}")
+
+        return PageImpl(products, finalPageable, totalElements)
+
+//
+//        TODO("ИСПРАВЬ ЭТОТ УЖАС")
+//
+//        val products1: Page<Product> = when (showDeleted) {
+//            null, false -> when (byOwner) {
+//                null, false -> when (onlySelling) {
+//                    null, false -> productRepo.findByDeletedFalse(finalPageable)
+//                    true -> productRepo.findByDeletedFalseAndSellingTrue(finalPageable)
+//                }
+//
+//                true -> when (onlySelling) {
+//                    null, false -> productRepo.findByDeletedFalseAndOwnerLogin(login = login, pageable = finalPageable)
+//                    true -> productRepo.findByDeletedFalseAndOwnerLoginAndSellingTrue(
+//                        login = login,
+//                        pageable = finalPageable
+//                    )
+//                }
+//            }
+//
+//            true -> when (byOwner) {
+//                null, false -> when (onlySelling) {
+//                    null, false -> productRepo.findAll(finalPageable)
+//                    true -> productRepo.findBySellingTrue(pageable = finalPageable)
+//                }
+//
+//                true -> {
+//                    when (onlySelling) {
+//                        null, false -> productRepo.findByOwnerLogin(login = login, pageable = finalPageable)
+//                        true -> productRepo.findByOwnerLoginAndSellingTrue(login = login, pageable = finalPageable)
+//                    }
+//                }
+//            }
+//        }
+//        log.info("Found ${products.totalElements} of available ${if (showDeleted!!) "" else "and deleted"} products ${if (byOwner!!) "" else "and by owner '$login'"}")
+//        return products.map { productMapper.toInfoResponse(it) }
     }
 
     override fun findById(id: UUID): ProductInfoResponse {

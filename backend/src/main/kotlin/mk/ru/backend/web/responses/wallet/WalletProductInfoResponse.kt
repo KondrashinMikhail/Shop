@@ -1,9 +1,9 @@
-package mk.ru.backend.web.responses.transaction
+package mk.ru.backend.web.responses.wallet
 
 import java.time.LocalDate
 import java.util.UUID
 
-data class TransactionProductInfoResponse(
+data class WalletProductInfoResponse(
     val id: UUID,
     val name: String,
     val description: String?,

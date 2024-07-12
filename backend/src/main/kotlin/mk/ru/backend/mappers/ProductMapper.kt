@@ -7,7 +7,7 @@ import mk.ru.backend.web.responses.payment.PaymentProductInfoResponse
 import mk.ru.backend.web.responses.product.ProductCreateResponse
 import mk.ru.backend.web.responses.product.ProductInfoResponse
 import mk.ru.backend.web.responses.product.ProductUpdateResponse
-import mk.ru.backend.web.responses.transaction.TransactionProductInfoResponse
+import mk.ru.backend.web.responses.wallet.WalletProductInfoResponse
 import org.springframework.stereotype.Component
 
 @Component
@@ -37,7 +37,7 @@ class ProductMapper(
         owner = appUserMapper.toProductInfoResponse(product.owner!!)
     )
 
-    fun toTransactionInfoResponse(product: Product): TransactionProductInfoResponse = TransactionProductInfoResponse(
+    fun toTransactionInfoResponse(product: Product): WalletProductInfoResponse = WalletProductInfoResponse(
         id = product.id!!,
         name = product.name!!,
         description = product.description,
