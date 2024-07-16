@@ -5,6 +5,7 @@ import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.web.requests.AppUserRegisterRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryAppUserInfoResponse
 import mk.ru.backend.web.responses.product.ProductAppUserInfoResponse
+import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 import mk.ru.backend.web.responses.wallet.WalletAppUserInfoResponse
 import org.springframework.stereotype.Component
@@ -37,5 +38,12 @@ class AppUserMapper {
     fun toPriceHistoryInfoResponse(appUser: AppUser): PriceHistoryAppUserInfoResponse = PriceHistoryAppUserInfoResponse(
         login = appUser.login!!,
         mail = appUser.mail!!,
+    )
+
+    fun toInfoResponse(appUser: AppUser): AppUserInfoResponse = AppUserInfoResponse(
+        login = appUser.login!!,
+        mail = appUser.mail!!,
+        blocked = appUser.blocked,
+        registrationDate = appUser.registrationDate!!
     )
 }

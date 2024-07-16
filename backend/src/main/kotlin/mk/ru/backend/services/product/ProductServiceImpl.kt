@@ -1,5 +1,6 @@
 package mk.ru.backend.services.product
 
+import jakarta.persistence.criteria.Predicate
 import jakarta.transaction.Transactional
 import java.util.UUID
 import mk.ru.backend.exceptions.ContentNotFoundException
@@ -25,6 +26,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 
 @Service
@@ -36,15 +38,10 @@ class ProductServiceImpl(
 ) : ProductService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    override fun search(
-        conditions: List<Condition<Any>>?,
-        pageable: Pageable?
-    ): Page<ProductInfoResponse> {
-        val products: Page<Product> =
-            productRepo.findAll(CommonFunctions.createSpecification(conditions), pageable ?: Pageable.unpaged())
-        log.info("Found ${products.totalElements} of products ${conditions?.let { "with ${it.size} of" } ?: "without"} conditions")
-        return products.map { productMapper.toInfoResponse(it) }
-    }
+    override fun search(conditions: List<Condition<Any>>?, pageable: Pageable?): Page<ProductInfoResponse> =
+        productRepo.findAll(
+            CommonFunctions.createSpecification(conditions), pageable ?: Pageable.unpaged()
+        ).map { productMapper.toInfoResponse(it) }
 
     override fun find(
         byOwner: Boolean?,
@@ -52,54 +49,32 @@ class ProductServiceImpl(
         onlySelling: Boolean?,
         pageable: Pageable?
     ): Page<ProductInfoResponse> {
-        val login: String = AppUserInfo.getAuthenticatedLogin()
-        val finalPageable = pageable ?: Pageable.unpaged()
+        val spec: Specification<Product> = Specification<Product> { root, _, criteriaBuilder ->
+            val predicates = mutableListOf<Predicate>()
 
-        val products: Page<Product> = when (showDeleted) {
-            null, false -> when (byOwner) {
-                null, false -> when (onlySelling) {
-                    null, false -> productRepo.findByDeletedFalse(finalPageable)
-                    true -> productRepo.findByDeletedFalseAndSellingTrue(finalPageable)
-                }
-
-                true -> when (onlySelling) {
-                    null, false -> productRepo.findByDeletedFalseAndOwnerLogin(login = login, pageable = finalPageable)
-                    true -> productRepo.findByDeletedFalseAndOwnerLoginAndSellingTrue(
-                        login = login,
-                        pageable = finalPageable
+            if (byOwner == true)
+                predicates.add(
+                    criteriaBuilder.equal(
+                        root.join<Product, AppUser>("owner").get<String>("login"),
+                        AppUserInfo.getAuthenticatedLogin()
                     )
-                }
-            }
+                )
+            if (showDeleted == false || showDeleted == null)
+                predicates.add(criteriaBuilder.equal(root.get<Boolean>("deleted"), false))
+            if (onlySelling == true) predicates.add(criteriaBuilder.equal(root.get<Boolean>("selling"), true))
 
-            true -> when (byOwner) {
-                null, false -> when (onlySelling) {
-                    null, false -> productRepo.findAll(finalPageable)
-                    true -> productRepo.findBySellingTrue(pageable = finalPageable)
-                }
-
-                true -> {
-                    when (onlySelling) {
-                        null, false -> productRepo.findByOwnerLogin(login = login, pageable = finalPageable)
-                        true -> productRepo.findByOwnerLoginAndSellingTrue(login = login, pageable = finalPageable)
-                    }
-                }
-            }
+            criteriaBuilder.and(* predicates.toTypedArray())
         }
-        log.info("Found ${products.totalElements} of available ${if (showDeleted!!) "" else "and deleted"} products ${if (byOwner!!) "" else "and by owner '$login'"}")
-        return products.map { productMapper.toInfoResponse(it) }
+
+        return productRepo.findAll(spec, pageable ?: Pageable.unpaged()).map { productMapper.toInfoResponse(it) }
     }
 
-    override fun findById(id: UUID): ProductInfoResponse {
-        val product: Product = findEntityById(id)
-        log.info("Found product with id - $id")
-        return productMapper.toInfoResponse(product)
-    }
+    override fun findById(id: UUID): ProductInfoResponse = productMapper.toInfoResponse(findEntityById(id))
 
     override fun create(productCreateRequest: ProductCreateRequest): ProductCreateResponse {
         val product: Product = productMapper.toEntity(productCreateRequest)
 
-        val authenticatedLogin: String = AppUserInfo.getAuthenticatedLogin()
-        product.owner = appUserService.findEntityByLogin(login = authenticatedLogin, blockedCheck = true)
+        product.owner = appUserService.getAuthenticated(blockedCheck = true)
 
         val savedProduct: Product = productRepo.save(product)
 
@@ -118,7 +93,6 @@ class ProductServiceImpl(
     override fun update(productUpdateRequest: ProductUpdateRequest): ProductUpdateResponse {
         val product: Product = findEntityById(id = productUpdateRequest.id, deletionCheck = true)
         AppUserInfo.checkAccessAllowed(product.owner?.login!!)
-        val authenticatedLogin: String = AppUserInfo.getAuthenticatedLogin()
 
         val updatedProduct: Product = productRepo.save(product.apply {
             productUpdateRequest.name?.let { name = it }
@@ -128,7 +102,7 @@ class ProductServiceImpl(
                     val productPriceHistory: PriceHistory = priceHistoryService.create(
                         PriceHistoryCreateRequest(
                             product = product,
-                            appUser = appUserService.findEntityByLogin(login = authenticatedLogin, blockedCheck = true),
+                            appUser = appUserService.getAuthenticated(blockedCheck = true),
                             price = it
                         )
                     )

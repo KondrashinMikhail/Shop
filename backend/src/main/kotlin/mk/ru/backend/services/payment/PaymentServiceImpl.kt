@@ -44,16 +44,14 @@ class PaymentServiceImpl(
     override fun buyProduct(productId: UUID): PaymentInfoResponse {
         val product: Product = productService.findEntityById(id = productId, deletionCheck = true)
         val productOwner: AppUser = product.owner!!
-        val authenticatedLogin: String = AppUserInfo.getAuthenticatedLogin()
         val recipientWallet: Wallet = productOwner.wallet!!
-        val authenticatedUser: AppUser =
-            appUserService.findEntityByLogin(login = authenticatedLogin, blockedCheck = true)
+        val authenticatedUser: AppUser = appUserService.getAuthenticated(blockedCheck = true)
         val senderWallet: Wallet = authenticatedUser.wallet!!
 
         val productPrice = CommonFunctions.getActualPrice(product)
         val feeAmount: BigDecimal = productPrice * feePercent.divide(BigDecimal(100))
 
-        if (productOwner.login == authenticatedLogin)
+        if (productOwner.login == authenticatedUser.login)
             throw AccessDeniedException("Authenticated user is already owner of this product")
         if (productOwner.blocked)
             throw SoftDeletionException("Owner of this product is blocked")

@@ -1,6 +1,5 @@
 package mk.ru.backend.services.pricehistory
 
-import jakarta.persistence.criteria.Join
 import java.util.UUID
 import mk.ru.backend.mappers.PriceHistoryMapper
 import mk.ru.backend.persistence.entities.PriceHistory
@@ -44,15 +43,10 @@ class PriceHistoryServiceImpl(
         val specification: Specification<PriceHistory> = CommonFunctions.createSpecification(conditions)
 
         val additionalSpec: Specification<PriceHistory> = Specification<PriceHistory> { root, _, criteriaBuilder ->
-            val productJoin: Join<PriceHistory, Product> = root.join("product")
-            criteriaBuilder.equal(productJoin.get<UUID>("id"), productId)
+            criteriaBuilder.equal(root.join<PriceHistory, Product>("product").get<UUID>("id"), productId)
         }
 
-        val priceHistories: Page<PriceHistoryInfoResponse> =
-            priceHistoryRepo.findAll(specification.and(additionalSpec), pageable ?: Pageable.unpaged())
-                .map { priceHistoryMapper.toInfoResponse(it) }
-        log.info("Found ${priceHistories.totalElements} of price histories ${conditions?.let { "with ${it.size} of" } ?: "without"} conditions")
-
-        return priceHistories
+        return priceHistoryRepo.findAll(specification.and(additionalSpec), pageable ?: Pageable.unpaged())
+            .map { priceHistoryMapper.toInfoResponse(it) }
     }
 }

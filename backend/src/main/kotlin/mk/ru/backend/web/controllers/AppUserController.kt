@@ -9,11 +9,11 @@ import mk.ru.backend.utils.SwaggerUtils
 import mk.ru.backend.web.requests.AppUserRegisterRequest
 import mk.ru.backend.web.requests.AuthenticationRequest
 import mk.ru.backend.web.requests.PasswordChangeRequest
+import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 import mk.ru.backend.web.responses.user.AuthenticationResponse
 import mk.ru.backend.web.responses.user.RefreshTokenResponse
 import mk.ru.backend.web.responses.wallet.WalletInfoResponse
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/user")
@@ -44,9 +43,7 @@ class AppUserController(
 
     @PostMapping("/refresh")
     fun refresh(@RequestBody refreshToken: String): ResponseEntity<RefreshTokenResponse> =
-        tokenService.refreshAccessToken(refreshToken)
-            ?.let { ResponseEntity.ok(it) }
-            ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid refresh token")
+        ResponseEntity.ok(tokenService.refreshAccessToken(refreshToken))
 
     @PatchMapping("/{login}/change-password")
     fun changePassword(
@@ -60,6 +57,10 @@ class AppUserController(
 
     @PatchMapping("/{login}/restore")
     fun restore(@PathVariable login: String): ResponseEntity<Unit> = ResponseEntity.ok(appUserService.restore(login))
+
+    @GetMapping("/{login}/info")
+    fun findInfo(@PathVariable login: String): ResponseEntity<AppUserInfoResponse> =
+        ResponseEntity.ok(appUserService.findInfo(login))
 
     @GetMapping("/wallet")
     fun findAuthenticatedWallet(): ResponseEntity<WalletInfoResponse> =

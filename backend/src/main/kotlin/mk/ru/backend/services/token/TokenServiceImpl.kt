@@ -57,7 +57,7 @@ class TokenServiceImpl(
                     refreshToken = createRefreshToken(currentUserDetails)
                 )
             else null
-        }
+        } ?: throw TokenException("Invalid refresh token")
     }
 
     override fun createAccessToken(user: UserDetails) = generateToken(
