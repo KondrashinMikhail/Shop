@@ -15,9 +15,9 @@ import org.springframework.data.domain.Pageable
 interface ProductService {
     fun search(conditions: List<Condition<Any>>?, pageable: Pageable?): Page<ProductInfoResponse>
     fun find(
-        byOwner: Boolean?,
-        showDeleted: Boolean?,
-        onlySelling: Boolean?,
+        byOwner: Boolean? = false,
+        showDeleted: Boolean? = false,
+        onlySelling: Boolean? = true,
         pageable: Pageable?
     ): Page<ProductInfoResponse>
 

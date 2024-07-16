@@ -12,6 +12,7 @@ import mk.ru.backend.utils.AppUserInfo
 import mk.ru.backend.utils.Patterns
 import mk.ru.backend.web.requests.AppUserRegisterRequest
 import mk.ru.backend.web.requests.PasswordChangeRequest
+import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,6 +27,9 @@ class AppUserServiceImpl(
     private val encoder: PasswordEncoder
 ) : AppUserService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
+
+    override fun findInfo(login: String): AppUserInfoResponse =
+        appUserMapper.toInfoResponse(findEntityByLogin(login = login, blockedCheck = true))
 
     override fun register(registerRequest: AppUserRegisterRequest): AppUserRegisterResponse {
         if (appUserRepo.existsByLoginOrMail(registerRequest.login, registerRequest.mail))
@@ -94,6 +98,9 @@ class AppUserServiceImpl(
         appUserRepo.save(user)
         log.info("Restored user with id - $login")
     }
+
+    override fun getAuthenticated(blockedCheck: Boolean): AppUser =
+        findEntityByLogin(AppUserInfo.getAuthenticatedLogin(), blockedCheck)
 
     override fun findEntityByLogin(login: String, blockedCheck: Boolean): AppUser {
         val user: AppUser = appUserRepo.findById(login)
