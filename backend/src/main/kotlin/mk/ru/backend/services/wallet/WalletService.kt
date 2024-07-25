@@ -7,6 +7,7 @@ import mk.ru.backend.persistence.entities.Wallet
 import mk.ru.backend.web.responses.wallet.WalletInfoResponse
 
 interface WalletService {
+    fun save(wallet: Wallet): Wallet
     fun create(owner: AppUser): Wallet
     fun getFromBalance(transaction: Transaction, wallet: Wallet)
     fun addToBalance(transaction: Transaction, wallet: Wallet)

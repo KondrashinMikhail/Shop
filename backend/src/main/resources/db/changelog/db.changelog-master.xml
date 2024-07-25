@@ -8,5 +8,6 @@
     <include file="/db/changelog/changeset/003-create-table-wallet.xml"/>
     <include file="/db/changelog/changeset/004-create-table-transaction.xml"/>
     <include file="/db/changelog/changeset/005-create-table-price_history.xml"/>
+    <include file="/db/changelog/changeset/006-create-table-outer_remittance.xml"/>
 
 </databaseChangeLog>

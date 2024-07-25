@@ -1,8 +1,8 @@
 package mk.ru.backend.web.responses.payment
 
-import java.util.UUID
+import java.util.*
 
-data class PaymentWalletInfoResponse(
+data class PaymentWalletResponse(
     val walletId: UUID,
     val userLogin: String
 )

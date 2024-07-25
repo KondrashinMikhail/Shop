@@ -3,11 +3,11 @@ package mk.ru.backend.mappers
 import mk.ru.backend.enums.AppUserRole
 import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.web.requests.AppUserRegisterRequest
-import mk.ru.backend.web.responses.pricehistory.PriceHistoryAppUserInfoResponse
-import mk.ru.backend.web.responses.product.ProductAppUserInfoResponse
+import mk.ru.backend.web.responses.pricehistory.PriceHistoryAppUserResponse
+import mk.ru.backend.web.responses.product.ProductAppUserResponse
 import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
-import mk.ru.backend.web.responses.wallet.WalletAppUserInfoResponse
+import mk.ru.backend.web.responses.wallet.WalletAppUserResponse
 import org.springframework.stereotype.Component
 
 @Component
@@ -24,18 +24,18 @@ class AppUserMapper {
         registrationDate = appUser.registrationDate!!
     )
 
-    fun toProductInfoResponse(appUser: AppUser): ProductAppUserInfoResponse = ProductAppUserInfoResponse(
+    fun toProductResponse(appUser: AppUser): ProductAppUserResponse = ProductAppUserResponse(
         login = appUser.login!!,
         mail = appUser.mail!!,
         blocked = appUser.blocked
     )
 
-    fun toWalletInfoResponse(appUser: AppUser): WalletAppUserInfoResponse = WalletAppUserInfoResponse(
+    fun toWalletResponse(appUser: AppUser): WalletAppUserResponse = WalletAppUserResponse(
         login = appUser.login!!,
         mail = appUser.mail!!,
     )
 
-    fun toPriceHistoryInfoResponse(appUser: AppUser): PriceHistoryAppUserInfoResponse = PriceHistoryAppUserInfoResponse(
+    fun toPriceHistoryResponse(appUser: AppUser): PriceHistoryAppUserResponse = PriceHistoryAppUserResponse(
         login = appUser.login!!,
         mail = appUser.mail!!,
     )

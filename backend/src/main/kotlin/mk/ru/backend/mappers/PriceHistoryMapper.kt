@@ -17,6 +17,6 @@ class PriceHistoryMapper(private val appUserMapper: AppUserMapper) {
         id = priceHistory.id!!,
         price = priceHistory.price!!,
         date = priceHistory.date!!,
-        user = appUserMapper.toPriceHistoryInfoResponse(priceHistory.appUser!!)
+        user = appUserMapper.toPriceHistoryResponse(priceHistory.appUser!!)
     )
 }

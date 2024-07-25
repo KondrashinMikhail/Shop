@@ -3,11 +3,11 @@ package mk.ru.backend.mappers
 import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.utils.CommonFunctions
 import mk.ru.backend.web.requests.ProductCreateRequest
-import mk.ru.backend.web.responses.payment.PaymentProductInfoResponse
+import mk.ru.backend.web.responses.payment.PaymentProductResponse
 import mk.ru.backend.web.responses.product.ProductCreateResponse
 import mk.ru.backend.web.responses.product.ProductInfoResponse
 import mk.ru.backend.web.responses.product.ProductUpdateResponse
-import mk.ru.backend.web.responses.wallet.WalletProductInfoResponse
+import mk.ru.backend.web.responses.wallet.WalletProductResponse
 import org.springframework.stereotype.Component
 
 @Component
@@ -34,17 +34,17 @@ class ProductMapper(
         deleted = product.deleted!!,
         actualPrice = CommonFunctions.getActualPrice(product),
         selling = product.selling!!,
-        owner = appUserMapper.toProductInfoResponse(product.owner!!)
+        owner = appUserMapper.toProductResponse(product.owner!!)
     )
 
-    fun toTransactionInfoResponse(product: Product): WalletProductInfoResponse = WalletProductInfoResponse(
+    fun toTransactionResponse(product: Product): WalletProductResponse = WalletProductResponse(
         id = product.id!!,
         name = product.name!!,
         description = product.description,
         registrationDate = product.registrationDate!!
     )
 
-    fun toPaymentInfoResponse(product: Product): PaymentProductInfoResponse = PaymentProductInfoResponse(
+    fun toPaymentResponse(product: Product): PaymentProductResponse = PaymentProductResponse(
         id = product.id!!,
         name = product.name!!,
         actualPrice = CommonFunctions.getActualPrice(product)
