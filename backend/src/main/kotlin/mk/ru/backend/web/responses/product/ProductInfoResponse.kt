@@ -12,5 +12,5 @@ data class ProductInfoResponse(
     val deleted: Boolean,
     val actualPrice: BigDecimal,
     val selling: Boolean,
-    val owner: ProductAppUserInfoResponse
+    val owner: ProductAppUserResponse
 )

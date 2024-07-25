@@ -29,5 +29,8 @@ data class Wallet(
     var transactionsSender: List<Transaction>? = null,
     @OneToMany(targetEntity = Transaction::class, mappedBy = "recipient")
     @Fetch(FetchMode.JOIN)
-    var transactionsRecipient: List<Transaction>? = null
+    var transactionsRecipient: List<Transaction>? = null,
+    @OneToMany(targetEntity = OuterRemittance::class, mappedBy = "wallet")
+    @Fetch(FetchMode.JOIN)
+    var outerRemittances: List<OuterRemittance>? = null
 )

@@ -2,7 +2,6 @@ package mk.ru.backend.services.product
 
 import jakarta.persistence.criteria.Predicate
 import jakarta.transaction.Transactional
-import java.util.UUID
 import mk.ru.backend.exceptions.ContentNotFoundException
 import mk.ru.backend.exceptions.SoftDeletionException
 import mk.ru.backend.exceptions.ValidationException
@@ -28,6 +27,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class ProductServiceImpl(
@@ -167,6 +167,8 @@ class ProductServiceImpl(
     @Transactional
     override fun transfer(product: Product, toUser: AppUser) {
         if (!product.selling!!) throw ValidationException("Product is not selling")
+        if (product.owner!!.login == toUser.login)
+            throw ValidationException("Product is already belongs to user with login - ${toUser.login}")
         product.owner = toUser
         product.selling = false
         productRepo.save(product)

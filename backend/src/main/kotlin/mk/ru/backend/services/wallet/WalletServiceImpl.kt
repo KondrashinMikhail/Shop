@@ -25,6 +25,8 @@ class WalletServiceImpl(
 ) : WalletService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
+    override fun save(wallet: Wallet): Wallet = walletRepo.save(wallet)
+
     override fun create(owner: AppUser): Wallet {
         val savedWallet: Wallet = walletRepo.save(Wallet(owner = owner))
         log.info("Created wallet with id - ${savedWallet.id} for user - ${owner.login}")
