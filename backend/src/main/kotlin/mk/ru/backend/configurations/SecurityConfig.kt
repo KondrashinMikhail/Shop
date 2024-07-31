@@ -3,7 +3,6 @@ package mk.ru.backend.configurations
 import mk.ru.backend.enums.AppUserRole
 import mk.ru.backend.services.user.AppUserDetailsService
 import mk.ru.backend.web.filters.JwtAuthenticationFilter
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -20,8 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(JwtProperties::class)
-class SecurityConfiguration(
+class SecurityConfig(
     private val appUserDetailsService: AppUserDetailsService
 ) {
     @Bean

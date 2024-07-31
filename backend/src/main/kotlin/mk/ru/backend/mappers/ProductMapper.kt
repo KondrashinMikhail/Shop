@@ -1,5 +1,7 @@
 package mk.ru.backend.mappers
 
+import java.math.BigDecimal
+import mk.ru.backend.configurations.AppProperties
 import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.utils.CommonFunctions
 import mk.ru.backend.web.requests.ProductCreateRequest
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ProductMapper(
-    private val appUserMapper: AppUserMapper
+    private val appProperties: AppProperties
 ) {
     fun toCreateResponse(product: Product): ProductCreateResponse = ProductCreateResponse(
         id = product.id!!,
@@ -23,19 +25,28 @@ class ProductMapper(
         id = product.id!!,
         name = product.name!!,
         description = product.description!!,
-        actualPrice = CommonFunctions.getActualPrice(product)
+        actualPrice = CommonFunctions.getActualPrice(product),
+        category = product.category!!.name!!
     )
 
-    fun toInfoResponse(product: Product): ProductInfoResponse = ProductInfoResponse(
-        id = product.id!!,
-        name = product.name!!,
-        description = product.description,
-        registrationDate = product.registrationDate!!,
-        deleted = product.deleted!!,
-        actualPrice = CommonFunctions.getActualPrice(product),
-        selling = product.selling!!,
-        owner = appUserMapper.toProductResponse(product.owner!!)
-    )
+    fun toInfoResponse(product: Product): ProductInfoResponse {
+        val actualPrice: BigDecimal = CommonFunctions.getActualPrice(product)
+        val feeAmount: BigDecimal = actualPrice.multiply(appProperties.feePercent.divide(BigDecimal(100)))
+        return ProductInfoResponse(
+            id = product.id!!,
+            name = product.name!!,
+            description = product.description,
+            registrationDate = product.registrationDate!!,
+            deleted = product.deleted!!,
+            actualPrice = actualPrice,
+            feeAmount = feeAmount,
+            totalPrice = actualPrice + feeAmount,
+            selling = product.selling!!,
+            owner = product.owner!!.login!!,
+            category = product.category!!.name!!,
+            priceLevel = CommonFunctions.calculatePriceLevel(product)
+        )
+    }
 
     fun toTransactionResponse(product: Product): WalletProductResponse = WalletProductResponse(
         id = product.id!!,

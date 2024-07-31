@@ -11,7 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     open-in-view: false
 app:
   jwt:
@@ -21,3 +21,4 @@ app:
     access-token-expiration: 3600000
     refresh-token-expiration: 86400000
   fee-percent: 10
+  bonus-percent: 5

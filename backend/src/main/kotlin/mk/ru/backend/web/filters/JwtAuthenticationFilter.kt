@@ -3,7 +3,7 @@ package mk.ru.backend.web.filters
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import mk.ru.backend.configurations.JwtProperties
+import mk.ru.backend.configurations.AppProperties
 import mk.ru.backend.services.token.TokenService
 import mk.ru.backend.services.user.AppUserDetailsService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -17,21 +17,21 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val userDetailsService: AppUserDetailsService,
     private val tokenService: TokenService,
-    private val jwtProperties: JwtProperties
+    private val appProperties: AppProperties
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader: String? = request.getHeader(jwtProperties.header)
+        val authHeader: String? = request.getHeader(appProperties.jwt.header)
 
-        if (authHeader == null || !authHeader.startsWith(jwtProperties.prefix)) {
+        if (authHeader == null || !authHeader.startsWith(appProperties.jwt.prefix)) {
             filterChain.doFilter(request, response)
             return
         }
 
-        val jwtToken = authHeader.substringAfter(jwtProperties.prefix)
+        val jwtToken = authHeader.substringAfter(appProperties.jwt.prefix)
         val login = tokenService.getLoginFromToken(jwtToken)
 
         if (SecurityContextHolder.getContext().authentication == null) {
