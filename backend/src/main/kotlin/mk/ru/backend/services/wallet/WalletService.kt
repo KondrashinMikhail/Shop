@@ -1,6 +1,6 @@
 package mk.ru.backend.services.wallet
 
-import java.util.UUID
+import java.util.*
 import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.persistence.entities.Transaction
 import mk.ru.backend.persistence.entities.Wallet
@@ -13,4 +13,5 @@ interface WalletService {
     fun addToBalance(transaction: Transaction, wallet: Wallet)
     fun findEntityById(id: UUID): Wallet
     fun findByAuthenticatedLogin(): WalletInfoResponse
+    fun addBonuses()
 }

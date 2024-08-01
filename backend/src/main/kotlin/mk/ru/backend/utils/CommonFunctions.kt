@@ -12,10 +12,10 @@ object CommonFunctions {
     fun getActualPrice(product: Product): BigDecimal =
         product.priceHistory!!.sortedBy { it.date }.reversed().first().price!!
 
-    fun findAverage(numbers: List<BigDecimal>): BigDecimal =
+    fun getAverage(numbers: List<BigDecimal>): BigDecimal =
         numbers.reduce { x, y -> x.plus(y) }.divide(BigDecimal(numbers.size.toString()))
 
-    fun calculatePriceLevel(product: Product): PriceLevel {
+    fun getPriceLevel(product: Product): PriceLevel {
         val actualPrice: BigDecimal = getActualPrice(product)
         val category: Category = product.category!!
 
@@ -24,7 +24,10 @@ object CommonFunctions {
         else PriceLevel.AVERAGE
     }
 
-    fun <T> createSpecification(conditions: List<Condition<Any>>?): Specification<T> =
+    fun getPercent(amount: BigDecimal, percentAmount: BigDecimal): BigDecimal =
+        amount.multiply(percentAmount.divide(BigDecimal(100)))
+
+    fun <T> getSpecification(conditions: List<Condition<Any>>?): Specification<T> =
         Specification<T> { root, _, criteriaBuilder ->
             val predicates = mutableListOf<Predicate>()
             conditions?.forEach { condition ->

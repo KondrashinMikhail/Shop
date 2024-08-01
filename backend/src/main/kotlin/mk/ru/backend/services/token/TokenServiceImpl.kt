@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import java.util.*
-import mk.ru.backend.configurations.AppProperties
+import mk.ru.backend.configurations.JwtProperties
 import mk.ru.backend.enums.TokenType
 import mk.ru.backend.exceptions.TokenException
 import mk.ru.backend.services.user.AppUserDetailsService
@@ -14,17 +14,17 @@ import org.springframework.stereotype.Service
 
 @Service
 class TokenServiceImpl(
-    private val appProperties: AppProperties,
+    private val jwtProperties: JwtProperties,
     private val appUserDetailsService: AppUserDetailsService
 ) : TokenService {
-    private val secretKey = Keys.hmacShaKeyFor(appProperties.jwt.secret.toByteArray())
+    private val secretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
     private val tokenTypeField: String = "tokenType"
 
     override fun generateToken(
         userDetails: UserDetails,
         expirationDate: Date,
         additionalClaims: Map<String, Any>
-    ): String = appProperties.jwt.prefix +
+    ): String = jwtProperties.prefix +
             Jwts.builder()
                 .claims()
                 .subject(userDetails.username)
@@ -42,7 +42,7 @@ class TokenServiceImpl(
 
     override fun refreshAccessToken(refreshToken: String): RefreshTokenResponse? {
         val subRefreshToken: String =
-            if (refreshToken.startsWith(appProperties.jwt.prefix)) refreshToken.substringAfter(appProperties.jwt.prefix)
+            if (refreshToken.startsWith(jwtProperties.prefix)) refreshToken.substringAfter(jwtProperties.prefix)
             else refreshToken
 
         if (getClaims(subRefreshToken)[tokenTypeField] != TokenType.REFRESH.name)
@@ -62,13 +62,13 @@ class TokenServiceImpl(
 
     override fun createAccessToken(user: UserDetails) = generateToken(
         userDetails = user,
-        expirationDate = Date(System.currentTimeMillis() + appProperties.jwt.accessTokenExpiration),
+        expirationDate = Date(System.currentTimeMillis() + jwtProperties.accessTokenExpiration),
         additionalClaims = mapOf(tokenTypeField to TokenType.ACCESS)
     )
 
     override fun createRefreshToken(user: UserDetails) = generateToken(
         userDetails = user,
-        expirationDate = Date(System.currentTimeMillis() + appProperties.jwt.refreshTokenExpiration),
+        expirationDate = Date(System.currentTimeMillis() + jwtProperties.refreshTokenExpiration),
         additionalClaims = mapOf(tokenTypeField to TokenType.REFRESH)
     )
 

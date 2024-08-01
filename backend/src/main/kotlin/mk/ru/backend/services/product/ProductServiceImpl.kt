@@ -42,7 +42,7 @@ class ProductServiceImpl(
 
     override fun search(conditions: List<Condition<Any>>?, pageable: Pageable?): Page<ProductInfoResponse> =
         productRepo.findAll(
-            CommonFunctions.createSpecification(conditions), pageable ?: Pageable.unpaged()
+            CommonFunctions.getSpecification(conditions), pageable ?: Pageable.unpaged()
         ).map { productMapper.toInfoResponse(it) }
 
     override fun find(

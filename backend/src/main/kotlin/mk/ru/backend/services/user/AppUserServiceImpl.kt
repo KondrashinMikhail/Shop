@@ -44,13 +44,12 @@ class AppUserServiceImpl(
         if (!Patterns.passwordRegex.matches(registerRequest.password))
             throw ValidationException("Password does not match regex")
 
-        val newUser = appUserMapper.toEntity(registerRequest)
+        val newUser: AppUser = appUserMapper.toEntity(registerRequest)
         newUser.password = newUser.password?.let { encodePassword(it) }
         val registeredUser = appUserRepo.save(newUser)
         log.info("Registered new user with login - '${registeredUser.login}'")
 
-        registeredUser.wallet = walletService.create(newUser)
-        appUserRepo.save(registeredUser)
+        appUserRepo.save(registeredUser.apply { wallet = walletService.create(newUser) })
         log.info("Attached wallet - '${registeredUser.wallet?.id}' to user - ${registeredUser.login}")
 
         return appUserMapper.toRegisterResponse(registeredUser)
@@ -61,16 +60,13 @@ class AppUserServiceImpl(
         AppUserInfo.checkAccessAllowed(login)
 
         val user = findEntityByLogin(login = login, blockedCheck = true)
-
         if (passwordChangeRequest.newPassword != passwordChangeRequest.newPasswordConfirm)
             throw ValidationException("Passwords are not equal")
-
         if (!Patterns.passwordRegex.matches(passwordChangeRequest.newPassword))
             throw ValidationException("Password does not match regex")
 
-        user.password = encodePassword(passwordChangeRequest.newPassword)
+        appUserRepo.save(user.apply { password = encodePassword(passwordChangeRequest.newPassword) })
         log.info("Changed password for user with login - '${user.login}'")
-        appUserRepo.save(user)
     }
 
     override fun block(login: String) {

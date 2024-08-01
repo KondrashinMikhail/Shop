@@ -1,7 +1,7 @@
 package mk.ru.backend.mappers
 
 import java.math.BigDecimal
-import mk.ru.backend.configurations.AppProperties
+import mk.ru.backend.configurations.PercentsProperties
 import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.utils.CommonFunctions
 import mk.ru.backend.web.requests.ProductCreateRequest
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ProductMapper(
-    private val appProperties: AppProperties
+    private val percentsProperties: PercentsProperties
 ) {
     fun toCreateResponse(product: Product): ProductCreateResponse = ProductCreateResponse(
         id = product.id!!,
@@ -31,7 +31,7 @@ class ProductMapper(
 
     fun toInfoResponse(product: Product): ProductInfoResponse {
         val actualPrice: BigDecimal = CommonFunctions.getActualPrice(product)
-        val feeAmount: BigDecimal = actualPrice.multiply(appProperties.feePercent.divide(BigDecimal(100)))
+        val feeAmount: BigDecimal = CommonFunctions.getPercent(actualPrice, percentsProperties.fee)
         return ProductInfoResponse(
             id = product.id!!,
             name = product.name!!,
@@ -44,7 +44,7 @@ class ProductMapper(
             selling = product.selling!!,
             owner = product.owner!!.login!!,
             category = product.category!!.name!!,
-            priceLevel = CommonFunctions.calculatePriceLevel(product)
+            priceLevel = CommonFunctions.getPriceLevel(product)
         )
     }
 

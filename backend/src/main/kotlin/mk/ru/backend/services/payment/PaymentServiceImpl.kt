@@ -3,7 +3,7 @@ package mk.ru.backend.services.payment
 import jakarta.transaction.Transactional
 import java.math.BigDecimal
 import java.util.*
-import mk.ru.backend.configurations.AppProperties
+import mk.ru.backend.configurations.PercentsProperties
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.exceptions.AccessDeniedException
 import mk.ru.backend.exceptions.SoftDeletionException
@@ -38,7 +38,7 @@ class PaymentServiceImpl(
     private val walletMapper: WalletMapper,
     private val productMapper: ProductMapper,
     private val transactionMapper: TransactionMapper,
-    private val appProperties: AppProperties
+    private val percentsProperties: PercentsProperties
 ) : PaymentService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
@@ -77,7 +77,7 @@ class PaymentServiceImpl(
         val senderWallet: Wallet = authenticatedUser.wallet!!
 
         val productPrice = CommonFunctions.getActualPrice(product)
-        val feeAmount: BigDecimal = productPrice.multiply(appProperties.feePercent.divide(BigDecimal(100)))
+        val feeAmount: BigDecimal = CommonFunctions.getPercent(productPrice, percentsProperties.fee)
 
         if (productOwner.login == authenticatedUser.login)
             throw AccessDeniedException("Authenticated user is already owner of this product")
@@ -91,7 +91,7 @@ class PaymentServiceImpl(
             recipientWallet = recipientWallet,
             amount = productPrice,
             feeAmount = feeAmount,
-            feePercent = appProperties.feePercent,
+            feePercent = percentsProperties.fee,
             product = product
         )
 
@@ -103,7 +103,7 @@ class PaymentServiceImpl(
         log.info(
             "Payed ${productPrice + feeAmount} for product with id - ${product.id}; " +
                     "From wallet with id - ${senderWallet.id} to wallet with id - ${recipientWallet.id};" +
-                    "Fee amount is $feeAmount due to fee percent is ${appProperties.feePercent}"
+                    "Fee amount is $feeAmount due to fee percent is ${percentsProperties.fee}"
         )
 
         log.info("App collected commission for transaction with id - ${savedTransaction.id} in the amount of $feeAmount")
