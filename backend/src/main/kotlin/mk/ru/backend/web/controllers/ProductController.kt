@@ -6,8 +6,8 @@ import mk.ru.backend.services.criteria.conditions.Condition
 import mk.ru.backend.services.pricehistory.PriceHistoryService
 import mk.ru.backend.services.product.ProductService
 import mk.ru.backend.utils.SwaggerUtils
-import mk.ru.backend.web.requests.ProductCreateRequest
-import mk.ru.backend.web.requests.ProductUpdateRequest
+import mk.ru.backend.web.requests.product.ProductCreateRequest
+import mk.ru.backend.web.requests.product.ProductUpdateRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryInfoResponse
 import mk.ru.backend.web.responses.product.ProductCreateResponse
 import mk.ru.backend.web.responses.product.ProductInfoResponse

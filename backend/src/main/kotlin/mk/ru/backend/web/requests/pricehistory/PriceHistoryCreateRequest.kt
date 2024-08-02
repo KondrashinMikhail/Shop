@@ -1,4 +1,4 @@
-package mk.ru.backend.web.requests
+package mk.ru.backend.web.requests.pricehistory
 
 import java.math.BigDecimal
 import mk.ru.backend.persistence.entities.AppUser

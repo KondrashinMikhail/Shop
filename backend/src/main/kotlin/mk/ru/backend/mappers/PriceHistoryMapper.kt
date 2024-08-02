@@ -1,7 +1,7 @@
 package mk.ru.backend.mappers
 
 import mk.ru.backend.persistence.entities.PriceHistory
-import mk.ru.backend.web.requests.PriceHistoryCreateRequest
+import mk.ru.backend.web.requests.pricehistory.PriceHistoryCreateRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryInfoResponse
 import org.springframework.stereotype.Component
 

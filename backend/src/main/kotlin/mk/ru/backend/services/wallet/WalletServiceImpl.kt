@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
-import mk.ru.backend.configurations.PercentsProperties
+import mk.ru.backend.properties.PercentsProperties
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.exceptions.ContentNotFoundException
 import mk.ru.backend.exceptions.SoftDeletionException

@@ -10,8 +10,8 @@ import mk.ru.backend.persistence.repositories.AppUserRepo
 import mk.ru.backend.services.wallet.WalletService
 import mk.ru.backend.utils.AppUserInfo
 import mk.ru.backend.utils.Patterns
-import mk.ru.backend.web.requests.AppUserRegisterRequest
-import mk.ru.backend.web.requests.PasswordChangeRequest
+import mk.ru.backend.web.requests.user.AppUserRegisterRequest
+import mk.ru.backend.web.requests.user.PasswordChangeRequest
 import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 import org.slf4j.Logger

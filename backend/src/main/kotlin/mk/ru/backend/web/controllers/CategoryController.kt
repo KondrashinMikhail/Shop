@@ -1,8 +1,8 @@
 package mk.ru.backend.web.controllers
 
 import mk.ru.backend.services.category.CategoryService
-import mk.ru.backend.web.requests.CategoryCreateRequest
-import mk.ru.backend.web.requests.CategoryUpdateNameRequest
+import mk.ru.backend.web.requests.category.CategoryCreateRequest
+import mk.ru.backend.web.requests.category.CategoryUpdateNameRequest
 import mk.ru.backend.web.responses.category.CategoryCreateResponse
 import mk.ru.backend.web.responses.category.CategoryUpdateNameResponse
 import org.springframework.http.ResponseEntity

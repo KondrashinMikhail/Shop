@@ -5,7 +5,7 @@ import java.util.*
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.services.payment.PaymentService
 import mk.ru.backend.utils.SwaggerUtils
-import mk.ru.backend.web.requests.OuterRemittanceCreateRequest
+import mk.ru.backend.web.requests.outerremittance.OuterRemittanceCreateRequest
 import mk.ru.backend.web.responses.payment.PaymentInfoResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable

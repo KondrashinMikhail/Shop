@@ -9,8 +9,8 @@ import mk.ru.backend.persistence.entities.Category
 import mk.ru.backend.persistence.repositories.CategoryRepo
 import mk.ru.backend.utils.AppUserInfo
 import mk.ru.backend.utils.CommonFunctions
-import mk.ru.backend.web.requests.CategoryCreateRequest
-import mk.ru.backend.web.requests.CategoryUpdateNameRequest
+import mk.ru.backend.web.requests.category.CategoryCreateRequest
+import mk.ru.backend.web.requests.category.CategoryUpdateNameRequest
 import mk.ru.backend.web.responses.category.CategoryCreateResponse
 import mk.ru.backend.web.responses.category.CategoryUpdateNameResponse
 import org.slf4j.Logger

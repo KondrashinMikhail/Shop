@@ -1,10 +1,10 @@
 package mk.ru.backend.mappers
 
 import java.math.BigDecimal
-import mk.ru.backend.configurations.PercentsProperties
 import mk.ru.backend.persistence.entities.Product
+import mk.ru.backend.properties.PercentsProperties
 import mk.ru.backend.utils.CommonFunctions
-import mk.ru.backend.web.requests.ProductCreateRequest
+import mk.ru.backend.web.requests.product.ProductCreateRequest
 import mk.ru.backend.web.responses.payment.PaymentProductResponse
 import mk.ru.backend.web.responses.product.ProductCreateResponse
 import mk.ru.backend.web.responses.product.ProductInfoResponse
