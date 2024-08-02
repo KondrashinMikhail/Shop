@@ -1,4 +1,4 @@
-package mk.ru.backend.web.requests
+package mk.ru.backend.web.requests.user
 
 data class PasswordChangeRequest(
     val newPassword: String,

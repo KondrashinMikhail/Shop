@@ -6,9 +6,9 @@ import mk.ru.backend.services.token.TokenService
 import mk.ru.backend.services.user.AppUserService
 import mk.ru.backend.services.wallet.WalletService
 import mk.ru.backend.utils.SwaggerUtils
-import mk.ru.backend.web.requests.AppUserRegisterRequest
-import mk.ru.backend.web.requests.AuthenticationRequest
-import mk.ru.backend.web.requests.PasswordChangeRequest
+import mk.ru.backend.web.requests.user.AppUserRegisterRequest
+import mk.ru.backend.web.requests.user.AuthenticationRequest
+import mk.ru.backend.web.requests.user.PasswordChangeRequest
 import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 import mk.ru.backend.web.responses.user.AuthenticationResponse

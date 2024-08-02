@@ -2,6 +2,7 @@ package mk.ru.backend.utils
 
 import jakarta.persistence.criteria.Predicate
 import java.math.BigDecimal
+import java.util.*
 import mk.ru.backend.enums.PriceLevel
 import mk.ru.backend.persistence.entities.Category
 import mk.ru.backend.persistence.entities.Product
@@ -26,6 +27,8 @@ object CommonFunctions {
 
     fun getPercent(amount: BigDecimal, percentAmount: BigDecimal): BigDecimal =
         amount.multiply(percentAmount.divide(BigDecimal(100)))
+
+    fun getFilestoragePath(filename: String, productId: UUID) = "$productId/$filename"
 
     fun <T> getSpecification(conditions: List<Condition<Any>>?): Specification<T> =
         Specification<T> { root, _, criteriaBuilder ->

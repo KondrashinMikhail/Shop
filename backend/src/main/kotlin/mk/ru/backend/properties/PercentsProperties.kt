@@ -1,4 +1,4 @@
-package mk.ru.backend.configurations
+package mk.ru.backend.properties
 
 import java.math.BigDecimal
 import org.springframework.boot.context.properties.ConfigurationProperties

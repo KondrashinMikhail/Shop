@@ -1,11 +1,11 @@
 package mk.ru.backend.services.product
 
-import java.util.UUID
+import java.util.*
 import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.services.criteria.conditions.Condition
-import mk.ru.backend.web.requests.ProductCreateRequest
-import mk.ru.backend.web.requests.ProductUpdateRequest
+import mk.ru.backend.web.requests.product.ProductCreateRequest
+import mk.ru.backend.web.requests.product.ProductUpdateRequest
 import mk.ru.backend.web.responses.product.ProductCreateResponse
 import mk.ru.backend.web.responses.product.ProductInfoResponse
 import mk.ru.backend.web.responses.product.ProductUpdateResponse
@@ -30,4 +30,5 @@ interface ProductService {
     fun restore(id: UUID)
     fun findEntityById(id: UUID, deletionCheck: Boolean = false): Product
     fun transfer(product: Product, toUser: AppUser)
+    fun checkProductExists(id: UUID)
 }

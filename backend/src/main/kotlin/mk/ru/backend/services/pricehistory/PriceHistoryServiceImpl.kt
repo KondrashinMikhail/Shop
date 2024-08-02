@@ -7,7 +7,7 @@ import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.persistence.repositories.PriceHistoryRepo
 import mk.ru.backend.services.criteria.conditions.Condition
 import mk.ru.backend.utils.CommonFunctions
-import mk.ru.backend.web.requests.PriceHistoryCreateRequest
+import mk.ru.backend.web.requests.pricehistory.PriceHistoryCreateRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryInfoResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

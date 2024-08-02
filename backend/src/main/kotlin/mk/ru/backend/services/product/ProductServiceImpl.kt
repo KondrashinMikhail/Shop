@@ -17,9 +17,9 @@ import mk.ru.backend.services.pricehistory.PriceHistoryService
 import mk.ru.backend.services.user.AppUserService
 import mk.ru.backend.utils.AppUserInfo
 import mk.ru.backend.utils.CommonFunctions
-import mk.ru.backend.web.requests.PriceHistoryCreateRequest
-import mk.ru.backend.web.requests.ProductCreateRequest
-import mk.ru.backend.web.requests.ProductUpdateRequest
+import mk.ru.backend.web.requests.pricehistory.PriceHistoryCreateRequest
+import mk.ru.backend.web.requests.product.ProductCreateRequest
+import mk.ru.backend.web.requests.product.ProductUpdateRequest
 import mk.ru.backend.web.responses.product.ProductCreateResponse
 import mk.ru.backend.web.responses.product.ProductInfoResponse
 import mk.ru.backend.web.responses.product.ProductUpdateResponse
@@ -189,6 +189,13 @@ class ProductServiceImpl(
         if (deletionCheck && product.deleted!!)
             throw SoftDeletionException("Product with id - $id not found")
         return product
+    }
+
+    override fun checkProductExists(id: UUID) {
+        val product: Product =
+            productRepo.findById(id).orElseThrow { ContentNotFoundException("Product with id - $id not found") }
+        if (product.deleted!!)
+            throw SoftDeletionException("Product with id - $id not found")
     }
 
     private fun saveProduct(product: Product) {

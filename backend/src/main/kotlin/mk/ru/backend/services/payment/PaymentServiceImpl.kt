@@ -3,7 +3,7 @@ package mk.ru.backend.services.payment
 import jakarta.transaction.Transactional
 import java.math.BigDecimal
 import java.util.*
-import mk.ru.backend.configurations.PercentsProperties
+import mk.ru.backend.properties.PercentsProperties
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.exceptions.AccessDeniedException
 import mk.ru.backend.exceptions.SoftDeletionException
@@ -22,7 +22,7 @@ import mk.ru.backend.services.user.AppUserService
 import mk.ru.backend.services.wallet.WalletService
 import mk.ru.backend.utils.AppUserInfo
 import mk.ru.backend.utils.CommonFunctions
-import mk.ru.backend.web.requests.OuterRemittanceCreateRequest
+import mk.ru.backend.web.requests.outerremittance.OuterRemittanceCreateRequest
 import mk.ru.backend.web.responses.payment.PaymentInfoResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

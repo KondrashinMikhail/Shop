@@ -1,8 +1,8 @@
 package mk.ru.backend.services.user
 
 import mk.ru.backend.persistence.entities.AppUser
-import mk.ru.backend.web.requests.AppUserRegisterRequest
-import mk.ru.backend.web.requests.PasswordChangeRequest
+import mk.ru.backend.web.requests.user.AppUserRegisterRequest
+import mk.ru.backend.web.requests.user.PasswordChangeRequest
 import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 
