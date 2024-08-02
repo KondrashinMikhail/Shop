@@ -11,6 +11,7 @@ import java.io.OutputStream
 import java.util.UUID
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import mk.ru.backend.exceptions.ValidationException
 import mk.ru.backend.properties.MinioProperties
 import mk.ru.backend.services.product.ProductService
 import mk.ru.backend.utils.CommonFunctions
@@ -41,10 +42,14 @@ class FilestorageServiceMinioImpl(
     }
 
     override fun uploadFile(productId: UUID, file: MultipartFile) {
+        val filename: String = file.originalFilename!!
+
+        if (listOf("png", "jpg", "jpeg", "webp").contains(filename.split('.').last().lowercase()))
+            throw ValidationException("File is not a photo")
+
         productService.checkProductExists(productId)
 
         val content = file.bytes
-        val filename: String = file.originalFilename!!
         val metadata: Map<String, String> = mapOf(metadataFilenameKey to filename)
 
         minioClient.putObject(
