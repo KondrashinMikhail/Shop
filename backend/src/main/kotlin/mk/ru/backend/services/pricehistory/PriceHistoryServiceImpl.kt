@@ -1,6 +1,6 @@
 package mk.ru.backend.services.pricehistory
 
-import java.util.UUID
+import java.util.*
 import mk.ru.backend.mappers.PriceHistoryMapper
 import mk.ru.backend.persistence.entities.PriceHistory
 import mk.ru.backend.persistence.entities.Product
@@ -40,7 +40,7 @@ class PriceHistoryServiceImpl(
         conditions: List<Condition<Any>>?,
         pageable: Pageable?
     ): Page<PriceHistoryInfoResponse> {
-        val specification: Specification<PriceHistory> = CommonFunctions.createSpecification(conditions)
+        val specification: Specification<PriceHistory> = CommonFunctions.getSpecification(conditions)
 
         val additionalSpec: Specification<PriceHistory> = Specification<PriceHistory> { root, _, criteriaBuilder ->
             criteriaBuilder.equal(root.join<PriceHistory, Product>("product").get<UUID>("id"), productId)

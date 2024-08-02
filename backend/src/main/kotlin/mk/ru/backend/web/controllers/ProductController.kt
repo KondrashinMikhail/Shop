@@ -1,7 +1,7 @@
 package mk.ru.backend.web.controllers
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import java.util.UUID
+import java.util.*
 import mk.ru.backend.services.criteria.conditions.Condition
 import mk.ru.backend.services.pricehistory.PriceHistoryService
 import mk.ru.backend.services.product.ProductService
@@ -75,10 +75,10 @@ class ProductController(
         ResponseEntity.ok(productService.unsell(id))
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: UUID): ResponseEntity<Unit> = ResponseEntity.ok(productService.delete(id))
+    fun delete(@PathVariable id: UUID) = productService.delete(id)
 
     @PatchMapping("/{id}/restore")
-    fun restore(@PathVariable id: UUID): ResponseEntity<Unit> = ResponseEntity.ok(productService.restore(id))
+    fun restore(@PathVariable id: UUID) = productService.restore(id)
 
     @GetMapping("/{productId}/price-history")
     fun getPriceHistory(

@@ -1,6 +1,9 @@
 package mk.ru.backend.services.payment
 
 import jakarta.transaction.Transactional
+import java.math.BigDecimal
+import java.util.*
+import mk.ru.backend.configurations.PercentsProperties
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.exceptions.AccessDeniedException
 import mk.ru.backend.exceptions.SoftDeletionException
@@ -23,10 +26,7 @@ import mk.ru.backend.web.requests.OuterRemittanceCreateRequest
 import mk.ru.backend.web.responses.payment.PaymentInfoResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
-import java.util.*
 
 @Service
 class PaymentServiceImpl(
@@ -38,11 +38,9 @@ class PaymentServiceImpl(
     private val walletMapper: WalletMapper,
     private val productMapper: ProductMapper,
     private val transactionMapper: TransactionMapper,
+    private val percentsProperties: PercentsProperties
 ) : PaymentService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
-
-    @Value("\${app.fee-percent}")
-    private val feePercent: BigDecimal = BigDecimal.ZERO
 
     @Transactional
     override fun doOuterRemittanceOperation(
@@ -79,7 +77,7 @@ class PaymentServiceImpl(
         val senderWallet: Wallet = authenticatedUser.wallet!!
 
         val productPrice = CommonFunctions.getActualPrice(product)
-        val feeAmount: BigDecimal = productPrice * feePercent.divide(BigDecimal(100))
+        val feeAmount: BigDecimal = CommonFunctions.getPercent(productPrice, percentsProperties.fee)
 
         if (productOwner.login == authenticatedUser.login)
             throw AccessDeniedException("Authenticated user is already owner of this product")
@@ -93,7 +91,7 @@ class PaymentServiceImpl(
             recipientWallet = recipientWallet,
             amount = productPrice,
             feeAmount = feeAmount,
-            feePercent = feePercent,
+            feePercent = percentsProperties.fee,
             product = product
         )
 
@@ -105,10 +103,10 @@ class PaymentServiceImpl(
         log.info(
             "Payed ${productPrice + feeAmount} for product with id - ${product.id}; " +
                     "From wallet with id - ${senderWallet.id} to wallet with id - ${recipientWallet.id};" +
-                    "Fee amount is $feeAmount due to fee percent is $feePercent"
+                    "Fee amount is $feeAmount due to fee percent is ${percentsProperties.fee}"
         )
 
-        log.info("App collected commission in the amount of $feeAmount")
+        log.info("App collected commission for transaction with id - ${savedTransaction.id} in the amount of $feeAmount")
 
         return PaymentInfoResponse(
             product = productMapper.toPaymentResponse(product),

@@ -3,11 +3,12 @@ package mk.ru.backend.persistence.entities
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.UuidGenerator
@@ -23,6 +24,7 @@ data class Wallet(
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
     @ManyToOne(targetEntity = AppUser::class)
     @Fetch(FetchMode.JOIN)
+    @JoinColumn(nullable = false)
     var owner: AppUser? = null,
     @OneToMany(targetEntity = Transaction::class, mappedBy = "sender")
     @Fetch(FetchMode.JOIN)

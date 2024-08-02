@@ -9,5 +9,6 @@
     <include file="/db/changelog/changeset/004-create-table-transaction.xml"/>
     <include file="/db/changelog/changeset/005-create-table-price_history.xml"/>
     <include file="/db/changelog/changeset/006-create-table-outer_remittance.xml"/>
+    <include file="/db/changelog/changeset/007-create-table-category.xml"/>
 
 </databaseChangeLog>

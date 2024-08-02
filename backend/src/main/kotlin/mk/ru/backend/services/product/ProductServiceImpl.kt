@@ -2,6 +2,7 @@ package mk.ru.backend.services.product
 
 import jakarta.persistence.criteria.Predicate
 import jakarta.transaction.Transactional
+import java.util.*
 import mk.ru.backend.exceptions.ContentNotFoundException
 import mk.ru.backend.exceptions.SoftDeletionException
 import mk.ru.backend.exceptions.ValidationException
@@ -10,6 +11,7 @@ import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.persistence.entities.PriceHistory
 import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.persistence.repositories.ProductRepo
+import mk.ru.backend.services.category.CategoryService
 import mk.ru.backend.services.criteria.conditions.Condition
 import mk.ru.backend.services.pricehistory.PriceHistoryService
 import mk.ru.backend.services.user.AppUserService
@@ -27,7 +29,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class ProductServiceImpl(
@@ -35,12 +36,13 @@ class ProductServiceImpl(
     private val appUserService: AppUserService,
     private val priceHistoryService: PriceHistoryService,
     private val productMapper: ProductMapper,
+    private val categoryService: CategoryService
 ) : ProductService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
     override fun search(conditions: List<Condition<Any>>?, pageable: Pageable?): Page<ProductInfoResponse> =
         productRepo.findAll(
-            CommonFunctions.createSpecification(conditions), pageable ?: Pageable.unpaged()
+            CommonFunctions.getSpecification(conditions), pageable ?: Pageable.unpaged()
         ).map { productMapper.toInfoResponse(it) }
 
     override fun find(
@@ -75,6 +77,7 @@ class ProductServiceImpl(
         val product: Product = productMapper.toEntity(productCreateRequest)
 
         product.owner = appUserService.getAuthenticated(blockedCheck = true)
+        product.category = categoryService.findEntityById(productCreateRequest.category)
 
         val savedProduct: Product = productRepo.save(product)
 
@@ -86,6 +89,8 @@ class ProductServiceImpl(
             )
         )
 
+        categoryService.updateCharacteristics(productCreateRequest.category)
+
         log.info("Created product with id - ${savedProduct.id}")
         return productMapper.toCreateResponse(savedProduct)
     }
@@ -94,7 +99,7 @@ class ProductServiceImpl(
         val product: Product = findEntityById(id = productUpdateRequest.id, deletionCheck = true)
         AppUserInfo.checkAccessAllowed(product.owner?.login!!)
 
-        val updatedProduct: Product = productRepo.save(product.apply {
+        val updatedProduct: Product = product.apply {
             productUpdateRequest.name?.let { name = it }
             productUpdateRequest.description?.let { description = it }
             productUpdateRequest.price?.let {
@@ -109,7 +114,10 @@ class ProductServiceImpl(
                     priceHistory = priceHistory!!.plus(productPriceHistory)
                 }
             }
-        })
+            productUpdateRequest.category?.let { category = categoryService.findEntityById(it) }
+        }
+
+        saveProduct(updatedProduct)
 
         log.info("Updated product with id - ${updatedProduct.id}")
         return productMapper.toUpdateResponse(updatedProduct)
@@ -123,7 +131,7 @@ class ProductServiceImpl(
             throw SoftDeletionException("Product with id - ${product.id} is already selling")
 
         product.selling = true
-        productRepo.save(product)
+        saveProduct(product)
         log.info("Set selling product with id - $id to 'true'")
 
         return productMapper.toInfoResponse(product)
@@ -137,7 +145,7 @@ class ProductServiceImpl(
             throw SoftDeletionException("Product with id - ${product.id} is not selling")
 
         product.selling = false
-        productRepo.save(product)
+        saveProduct(product)
         log.info("Set selling product with id - $id to 'false'")
 
         return productMapper.toInfoResponse(product)
@@ -148,7 +156,7 @@ class ProductServiceImpl(
         AppUserInfo.checkAccessAllowed(product.owner?.login!!)
 
         product.deleted = true
-        productRepo.save(product)
+        saveProduct(product)
         log.info("Deleted product with id - $id")
     }
 
@@ -160,7 +168,7 @@ class ProductServiceImpl(
             true -> product.deleted = false
             false -> throw SoftDeletionException("Product with id - $id is not deleted")
         }
-        productRepo.save(product)
+        saveProduct(product)
         log.info("Restored product with id - $id")
     }
 
@@ -171,7 +179,7 @@ class ProductServiceImpl(
             throw ValidationException("Product is already belongs to user with login - ${toUser.login}")
         product.owner = toUser
         product.selling = false
-        productRepo.save(product)
+        saveProduct(product)
         log.info("Transferred product with id - ${product.id} to user with login - ${toUser.login}")
     }
 
@@ -181,5 +189,10 @@ class ProductServiceImpl(
         if (deletionCheck && product.deleted!!)
             throw SoftDeletionException("Product with id - $id not found")
         return product
+    }
+
+    private fun saveProduct(product: Product) {
+        productRepo.save(product)
+        categoryService.updateCharacteristics(product.category!!.name!!)
     }
 }

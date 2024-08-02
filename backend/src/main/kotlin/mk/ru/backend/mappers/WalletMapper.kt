@@ -26,7 +26,11 @@ class WalletMapper(
         outgoingOuterRemittances = wallet.outerRemittances?.let { outgoing ->
             outgoing.filter { it.type == OuterRemittanceType.OUTGOING }
                 .map { outerRemittanceMapper.toWalletResponse(it) }
-        }
+        },
+        bonusOuterRemittances = wallet.outerRemittances?.let { bonuses ->
+            bonuses.filter { it.type == OuterRemittanceType.BONUS }
+                .map { outerRemittanceMapper.toWalletResponse(it) }
+        },
     )
 
     fun toPaymentResponse(wallet: Wallet): PaymentWalletResponse = PaymentWalletResponse(

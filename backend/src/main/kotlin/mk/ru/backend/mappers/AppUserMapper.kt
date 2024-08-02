@@ -4,7 +4,6 @@ import mk.ru.backend.enums.AppUserRole
 import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.web.requests.AppUserRegisterRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryAppUserResponse
-import mk.ru.backend.web.responses.product.ProductAppUserResponse
 import mk.ru.backend.web.responses.user.AppUserInfoResponse
 import mk.ru.backend.web.responses.user.AppUserRegisterResponse
 import mk.ru.backend.web.responses.wallet.WalletAppUserResponse
@@ -22,12 +21,6 @@ class AppUserMapper {
     fun toRegisterResponse(appUser: AppUser): AppUserRegisterResponse = AppUserRegisterResponse(
         login = appUser.login!!,
         registrationDate = appUser.registrationDate!!
-    )
-
-    fun toProductResponse(appUser: AppUser): ProductAppUserResponse = ProductAppUserResponse(
-        login = appUser.login!!,
-        mail = appUser.mail!!,
-        blocked = appUser.blocked
     )
 
     fun toWalletResponse(appUser: AppUser): WalletAppUserResponse = WalletAppUserResponse(

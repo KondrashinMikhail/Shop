@@ -11,13 +11,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     open-in-view: false
 app:
+  percents:
+    fee: 10
+    bonus: 5
   jwt:
     prefix: "Bearer "
     header: Authorization
     secret: NDI2MTY1NkM2NDc1NkU2N19jYXJfc2hvcF9hcHA
     access-token-expiration: 3600000
     refresh-token-expiration: 86400000
-  fee-percent: 10

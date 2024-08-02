@@ -12,5 +12,6 @@ data class WalletInfoResponse(
     val transactionsSender: List<WalletTransactionSenderResponse>?,
     val transactionsRecipient: List<WalletTransactionRecipientResponse>?,
     val incomingOuterRemittances: List<WalletOuterRemittanceResponse>?,
-    val outgoingOuterRemittances: List<WalletOuterRemittanceResponse>?
+    val outgoingOuterRemittances: List<WalletOuterRemittanceResponse>?,
+    val bonusOuterRemittances: List<WalletOuterRemittanceResponse>?
 )

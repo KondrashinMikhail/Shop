@@ -3,7 +3,7 @@ package mk.ru.backend.services.token
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import java.util.Date
+import java.util.*
 import mk.ru.backend.configurations.JwtProperties
 import mk.ru.backend.enums.TokenType
 import mk.ru.backend.exceptions.TokenException

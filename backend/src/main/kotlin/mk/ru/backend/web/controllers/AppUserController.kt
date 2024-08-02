@@ -49,14 +49,13 @@ class AppUserController(
     fun changePassword(
         @PathVariable login: String,
         @RequestBody passwordChangeRequest: PasswordChangeRequest
-    ): ResponseEntity<Unit> =
-        ResponseEntity.ok(appUserService.changePassword(login = login, passwordChangeRequest = passwordChangeRequest))
+    ) = appUserService.changePassword(login = login, passwordChangeRequest = passwordChangeRequest)
 
     @DeleteMapping("/{login}/block")
-    fun block(@PathVariable login: String): ResponseEntity<Unit> = ResponseEntity.ok(appUserService.block(login))
+    fun block(@PathVariable login: String) = appUserService.block(login)
 
     @PatchMapping("/{login}/restore")
-    fun restore(@PathVariable login: String): ResponseEntity<Unit> = ResponseEntity.ok(appUserService.restore(login))
+    fun restore(@PathVariable login: String) = appUserService.restore(login)
 
     @GetMapping("/{login}/info")
     fun findInfo(@PathVariable login: String): ResponseEntity<AppUserInfoResponse> =

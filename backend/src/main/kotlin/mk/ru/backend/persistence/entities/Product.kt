@@ -4,10 +4,11 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
@@ -32,6 +33,11 @@ data class Product(
     @OneToMany(targetEntity = PriceHistory::class, mappedBy = "product")
     @Fetch(FetchMode.JOIN)
     var priceHistory: List<PriceHistory>? = null,
+    @ManyToOne(targetEntity = Category::class)
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(nullable = false)
+    var category: Category? = null,
     @ManyToOne(targetEntity = AppUser::class, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     var owner: AppUser? = null,
 )

@@ -4,11 +4,12 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
@@ -30,10 +31,13 @@ data class Transaction(
     var date: LocalDateTime? = LocalDateTime.now(),
     @ManyToOne(targetEntity = Wallet::class)
     @Fetch(FetchMode.JOIN)
+    @JoinColumn(nullable = false)
     var sender: Wallet? = null,
     @ManyToOne(targetEntity = Wallet::class)
     @Fetch(FetchMode.JOIN)
+    @JoinColumn(nullable = false)
     var recipient: Wallet? = null,
     @OneToOne(targetEntity = Product::class, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     var product: Product? = null
 )
