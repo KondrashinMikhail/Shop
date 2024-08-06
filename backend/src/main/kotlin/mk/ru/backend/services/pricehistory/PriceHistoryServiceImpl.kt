@@ -1,12 +1,13 @@
 package mk.ru.backend.services.pricehistory
 
-import java.util.*
+import jakarta.transaction.Transactional
+import java.util.UUID
 import mk.ru.backend.mappers.PriceHistoryMapper
 import mk.ru.backend.persistence.entities.PriceHistory
 import mk.ru.backend.persistence.entities.Product
 import mk.ru.backend.persistence.repositories.PriceHistoryRepo
-import mk.ru.backend.services.criteria.conditions.Condition
-import mk.ru.backend.utils.CommonFunctions
+import mk.ru.backend.criteria.conditions.Condition
+import mk.ru.backend.utils.ExtensionFunctions
 import mk.ru.backend.web.requests.pricehistory.PriceHistoryCreateRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryInfoResponse
 import org.slf4j.Logger
@@ -23,10 +24,10 @@ class PriceHistoryServiceImpl(
 ) : PriceHistoryService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
+    @Transactional
     override fun create(priceHistoryCreateRequest: PriceHistoryCreateRequest): PriceHistory {
         val savedPriceHistory: PriceHistory =
-            priceHistoryRepo.save(priceHistoryMapper.toEntity(priceHistoryCreateRequest))
-
+            priceHistoryRepo.save(priceHistoryMapper.toCreateEntity(priceHistoryCreateRequest))
         log.info(
             "Created price history with id - ${savedPriceHistory.id} " +
                     "for product with id - ${priceHistoryCreateRequest.product.id} " +
@@ -40,13 +41,14 @@ class PriceHistoryServiceImpl(
         conditions: List<Condition<Any>>?,
         pageable: Pageable?
     ): Page<PriceHistoryInfoResponse> {
-        val specification: Specification<PriceHistory> = CommonFunctions.getSpecification(conditions)
-
+        val specification: Specification<PriceHistory> = ExtensionFunctions.getSpecification(conditions)
         val additionalSpec: Specification<PriceHistory> = Specification<PriceHistory> { root, _, criteriaBuilder ->
             criteriaBuilder.equal(root.join<PriceHistory, Product>("product").get<UUID>("id"), productId)
         }
 
-        return priceHistoryRepo.findAll(specification.and(additionalSpec), pageable ?: Pageable.unpaged())
-            .map { priceHistoryMapper.toInfoResponse(it) }
+        return priceHistoryRepo.findAll(
+            specification.and(additionalSpec),
+            pageable ?: Pageable.unpaged()
+        ).map { priceHistoryMapper.toInfoResponse(it) }
     }
 }

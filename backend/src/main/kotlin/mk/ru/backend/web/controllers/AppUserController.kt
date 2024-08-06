@@ -1,11 +1,10 @@
 package mk.ru.backend.web.controllers
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import mk.ru.backend.annotations.CommonController
 import mk.ru.backend.services.authentication.AuthenticationService
 import mk.ru.backend.services.token.TokenService
 import mk.ru.backend.services.user.AppUserService
 import mk.ru.backend.services.wallet.WalletService
-import mk.ru.backend.utils.SwaggerUtils
 import mk.ru.backend.web.requests.user.AppUserRegisterRequest
 import mk.ru.backend.web.requests.user.AuthenticationRequest
 import mk.ru.backend.web.requests.user.PasswordChangeRequest
@@ -22,11 +21,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
+@CommonController
 @RequestMapping("/user")
-@SecurityRequirement(name = SwaggerUtils.SECURITY_SCHEME_NAME)
 class AppUserController(
     private val appUserService: AppUserService,
     private val authenticationService: AuthenticationService,

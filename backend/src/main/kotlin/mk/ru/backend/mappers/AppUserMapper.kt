@@ -1,5 +1,6 @@
 package mk.ru.backend.mappers
 
+import java.time.LocalDate
 import mk.ru.backend.enums.AppUserRole
 import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.web.requests.user.AppUserRegisterRequest
@@ -11,32 +12,34 @@ import org.springframework.stereotype.Component
 
 @Component
 class AppUserMapper {
-    fun toEntity(user: AppUserRegisterRequest): AppUser = AppUser(
+    fun toRegisterEntity(user: AppUserRegisterRequest): AppUser = AppUser(
         login = user.login,
         password = user.password,
         mail = user.mail,
         role = AppUserRole.USER,
+        registrationDate = LocalDate.now(),
+        wallet = null
     )
 
     fun toRegisterResponse(appUser: AppUser): AppUserRegisterResponse = AppUserRegisterResponse(
-        login = appUser.login!!,
-        registrationDate = appUser.registrationDate!!
+        login = appUser.login,
+        registrationDate = appUser.registrationDate
     )
 
     fun toWalletResponse(appUser: AppUser): WalletAppUserResponse = WalletAppUserResponse(
-        login = appUser.login!!,
-        mail = appUser.mail!!,
+        login = appUser.login,
+        mail = appUser.mail,
     )
 
     fun toPriceHistoryResponse(appUser: AppUser): PriceHistoryAppUserResponse = PriceHistoryAppUserResponse(
-        login = appUser.login!!,
-        mail = appUser.mail!!,
+        login = appUser.login,
+        mail = appUser.mail,
     )
 
     fun toInfoResponse(appUser: AppUser): AppUserInfoResponse = AppUserInfoResponse(
-        login = appUser.login!!,
-        mail = appUser.mail!!,
+        login = appUser.login,
+        mail = appUser.mail,
         blocked = appUser.blocked,
-        registrationDate = appUser.registrationDate!!
+        registrationDate = appUser.registrationDate
     )
 }

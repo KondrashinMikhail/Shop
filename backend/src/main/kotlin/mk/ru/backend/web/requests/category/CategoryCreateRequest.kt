@@ -1,5 +1,8 @@
 package mk.ru.backend.web.requests.category
 
-data class CategoryCreateRequest(
-    val name: String
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class CategoryCreateRequest @JsonCreator constructor(
+    @field:JsonProperty("name") val name: String
 )

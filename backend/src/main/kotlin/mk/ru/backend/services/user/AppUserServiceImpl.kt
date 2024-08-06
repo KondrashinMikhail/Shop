@@ -9,6 +9,7 @@ import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.persistence.repositories.AppUserRepo
 import mk.ru.backend.services.wallet.WalletService
 import mk.ru.backend.utils.AppUserInfo
+import mk.ru.backend.utils.ExtensionFunctions.isPatternFits
 import mk.ru.backend.utils.Patterns
 import mk.ru.backend.web.requests.user.AppUserRegisterRequest
 import mk.ru.backend.web.requests.user.PasswordChangeRequest
@@ -32,21 +33,22 @@ class AppUserServiceImpl(
         appUserMapper.toInfoResponse(findEntityByLogin(login = login, blockedCheck = true))
 
     override fun register(registerRequest: AppUserRegisterRequest): AppUserRegisterResponse {
-        if (appUserRepo.existsByLoginOrMail(registerRequest.login, registerRequest.mail))
-            throw ValidationException("User with such credentials already exists")
+        when {
+            appUserRepo.existsByLoginOrMail(registerRequest.login, registerRequest.mail) ->
+                throw ValidationException("User with such credentials already exists")
 
-        if (!Patterns.loginRegex.matches(registerRequest.login))
-            throw ValidationException("Login does not match regex")
+            !registerRequest.login.isPatternFits(Patterns.LOGIN_PATTERN) ->
+                throw ValidationException("Login does not match regex")
 
-        if (!Patterns.mailRegex.matches(registerRequest.mail))
-            throw ValidationException("Mail does not match regex")
+            !registerRequest.mail.isPatternFits(Patterns.MAIL_PATTERN) ->
+                throw ValidationException("Mail does not match regex")
 
-        if (!Patterns.passwordRegex.matches(registerRequest.password))
-            throw ValidationException("Password does not match regex")
+            !registerRequest.password.isPatternFits(Patterns.PASSWORD_PATTERN) ->
+                throw ValidationException("Password does not match regex")
+        }
 
-        val newUser: AppUser = appUserMapper.toEntity(registerRequest)
-        newUser.password = newUser.password?.let { encodePassword(it) }
-        val registeredUser = appUserRepo.save(newUser)
+        val newUser: AppUser = appUserMapper.toRegisterEntity(registerRequest)
+        val registeredUser = appUserRepo.save(newUser.apply { password = encodePassword(password) })
         log.info("Registered new user with login - '${registeredUser.login}'")
 
         appUserRepo.save(registeredUser.apply { wallet = walletService.create(newUser) })
@@ -60,10 +62,13 @@ class AppUserServiceImpl(
         AppUserInfo.checkAccessAllowed(login)
 
         val user = findEntityByLogin(login = login, blockedCheck = true)
-        if (passwordChangeRequest.newPassword != passwordChangeRequest.newPasswordConfirm)
-            throw ValidationException("Passwords are not equal")
-        if (!Patterns.passwordRegex.matches(passwordChangeRequest.newPassword))
-            throw ValidationException("Password does not match regex")
+        when {
+            passwordChangeRequest.newPassword != passwordChangeRequest.newPasswordConfirm ->
+                throw ValidationException("Passwords are not equal")
+
+            !passwordChangeRequest.newPassword.isPatternFits(Patterns.PASSWORD_PATTERN) ->
+                throw ValidationException("Password does not match regex")
+        }
 
         appUserRepo.save(user.apply { password = encodePassword(passwordChangeRequest.newPassword) })
         log.info("Changed password for user with login - '${user.login}'")

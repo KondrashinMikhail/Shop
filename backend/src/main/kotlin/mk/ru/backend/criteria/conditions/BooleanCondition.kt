@@ -1,7 +1,7 @@
-package mk.ru.backend.services.criteria.conditions
+package mk.ru.backend.criteria.conditions
 
 import mk.ru.backend.enums.CriteriaOperation
-import mk.ru.backend.services.criteria.specifications.BooleanPredicateSpecification
+import mk.ru.backend.criteria.specifications.BooleanPredicateSpecification
 
 data class BooleanCondition(
     override val field: String,

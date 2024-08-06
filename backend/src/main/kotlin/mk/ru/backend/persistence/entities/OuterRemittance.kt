@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import mk.ru.backend.enums.OuterRemittanceType
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UuidGenerator
@@ -20,15 +20,15 @@ data class OuterRemittance(
     @Id
     @UuidGenerator
     var id: UUID? = null,
-    @Column(nullable = false)
-    var amount: BigDecimal? = BigDecimal.ZERO,
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false, insertable = false)
+    var amount: BigDecimal,
+    @Column(nullable = false, updatable = false, insertable = false)
     @CreationTimestamp
-    var date: LocalDateTime? = LocalDateTime.now(),
-    @Column(nullable = false)
+    var date: LocalDateTime,
+    @Column(nullable = false, updatable = false, insertable = false)
     @Enumerated(EnumType.STRING)
-    var type: OuterRemittanceType? = null,
+    var type: OuterRemittanceType,
     @ManyToOne(targetEntity = Wallet::class, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    var wallet: Wallet? = null
+    @JoinColumn(nullable = false, updatable = false, insertable = false)
+    var wallet: Wallet
 )

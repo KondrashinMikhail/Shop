@@ -8,10 +8,11 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.UuidGenerator
+import org.springframework.data.annotation.LastModifiedDate
 
 @Entity
 data class Wallet(
@@ -21,11 +22,12 @@ data class Wallet(
     @Column(nullable = false)
     var balance: BigDecimal = BigDecimal.ZERO,
     @Column(nullable = false)
-    var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
+    @LastModifiedDate
+    var lastModifiedDate: LocalDateTime,
     @ManyToOne(targetEntity = AppUser::class)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(nullable = false)
-    var owner: AppUser? = null,
+    @JoinColumn(nullable = false, updatable = false, insertable = false)
+    var owner: AppUser,
     @OneToMany(targetEntity = Transaction::class, mappedBy = "sender")
     @Fetch(FetchMode.JOIN)
     var transactionsSender: List<Transaction>? = null,

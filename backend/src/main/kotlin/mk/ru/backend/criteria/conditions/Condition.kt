@@ -1,11 +1,11 @@
-package mk.ru.backend.services.criteria.conditions
+package mk.ru.backend.criteria.conditions
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import mk.ru.backend.enums.CriteriaOperation
-import mk.ru.backend.services.criteria.specifications.PredicateSpecification
+import mk.ru.backend.criteria.specifications.PredicateSpecification
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

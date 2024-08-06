@@ -4,7 +4,7 @@ server:
     context-path: ${CONTEXT_PATH:/api}
 spring:
   application:
-    name: ${NAME:shop}
+    name: shop
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.xml
@@ -23,3 +23,5 @@ app:
     secret: NDI2MTY1NkM2NDc1NkU2N19jYXJfc2hvcF9hcHA
     access-token-expiration: 3600000
     refresh-token-expiration: 86400000
+minio:
+  products-bucket-name: products

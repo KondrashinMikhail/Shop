@@ -1,11 +1,10 @@
 package mk.ru.backend.web.controllers
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import java.util.*
-import mk.ru.backend.services.criteria.conditions.Condition
+import java.util.UUID
+import mk.ru.backend.annotations.CommonController
+import mk.ru.backend.criteria.conditions.Condition
 import mk.ru.backend.services.pricehistory.PriceHistoryService
 import mk.ru.backend.services.product.ProductService
-import mk.ru.backend.utils.SwaggerUtils
 import mk.ru.backend.web.requests.product.ProductCreateRequest
 import mk.ru.backend.web.requests.product.ProductUpdateRequest
 import mk.ru.backend.web.responses.pricehistory.PriceHistoryInfoResponse
@@ -23,11 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
+@CommonController
 @RequestMapping("/product")
-@SecurityRequirement(name = SwaggerUtils.SECURITY_SCHEME_NAME)
 class ProductController(
     private val productService: ProductService,
     private val priceHistoryService: PriceHistoryService
@@ -63,9 +60,12 @@ class ProductController(
     fun create(@RequestBody productCreateRequest: ProductCreateRequest): ResponseEntity<ProductCreateResponse> =
         ResponseEntity.ok(productService.create(productCreateRequest))
 
-    @PatchMapping
-    fun update(@RequestBody productUpdateRequest: ProductUpdateRequest): ResponseEntity<ProductUpdateResponse> =
-        ResponseEntity.ok(productService.update(productUpdateRequest))
+    @PatchMapping("/{id}")
+    fun update(
+        @PathVariable id: UUID,
+        @RequestBody productUpdateRequest: ProductUpdateRequest
+    ): ResponseEntity<ProductUpdateResponse> =
+        ResponseEntity.ok(productService.update(id, productUpdateRequest))
 
     @PostMapping("/{id}/sell")
     fun sell(@PathVariable id: UUID): ResponseEntity<ProductInfoResponse> = ResponseEntity.ok(productService.sell(id))

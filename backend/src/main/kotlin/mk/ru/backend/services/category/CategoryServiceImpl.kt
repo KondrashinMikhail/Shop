@@ -8,10 +8,12 @@ import mk.ru.backend.mappers.CategoryMapper
 import mk.ru.backend.persistence.entities.Category
 import mk.ru.backend.persistence.repositories.CategoryRepo
 import mk.ru.backend.utils.AppUserInfo
-import mk.ru.backend.utils.CommonFunctions
+import mk.ru.backend.utils.ExtensionFunctions
+import mk.ru.backend.utils.ExtensionFunctions.getActualPrice
 import mk.ru.backend.web.requests.category.CategoryCreateRequest
 import mk.ru.backend.web.requests.category.CategoryUpdateNameRequest
 import mk.ru.backend.web.responses.category.CategoryCreateResponse
+import mk.ru.backend.web.responses.category.CategoryInfoResponse
 import mk.ru.backend.web.responses.category.CategoryUpdateNameResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,6 +26,7 @@ class CategoryServiceImpl(
 ) : CategoryService {
     private val log: Logger = LoggerFactory.getLogger(this.javaClass.name)
 
+    @Transactional
     override fun create(categoryCreateRequest: CategoryCreateRequest): CategoryCreateResponse {
         AppUserInfo.checkAccessAllowed()
         if (categoryCreateRequest.name.isBlank() || categoryCreateRequest.name.isEmpty())
@@ -33,39 +36,46 @@ class CategoryServiceImpl(
         return categoryMapper.toCreateResponse(savedCategory)
     }
 
-    override fun updateName(categoryUpdateNameRequest: CategoryUpdateNameRequest): CategoryUpdateNameResponse {
+    override fun updateName(
+        categoryName: String,
+        categoryUpdateNameRequest: CategoryUpdateNameRequest
+    ): CategoryUpdateNameResponse {
         AppUserInfo.checkAccessAllowed()
-        val category: Category = findEntityById(categoryUpdateNameRequest.oldName)
-        categoryRepo.save(category.apply { name = categoryUpdateNameRequest.newName })
-        log.info("Updated category name from ${categoryUpdateNameRequest.oldName} to ${category.name}")
+        val category: Category = findEntityById(categoryName)
+        categoryRepo.save(category.apply { name = categoryUpdateNameRequest.name })
+        log.info("Updated category name from $categoryName to ${category.name}")
         return CategoryUpdateNameResponse(
-            previousName = categoryUpdateNameRequest.oldName,
-            updatedName = categoryUpdateNameRequest.newName
+            previousName = categoryName,
+            updatedName = categoryUpdateNameRequest.name
         )
     }
 
     @Transactional
     override fun updateCharacteristics(name: String) {
         val category: Category = findEntityById(name)
+        val prices: List<BigDecimal>? = category.products
+            ?.asSequence()
+            ?.filter { it.selling && !it.deleted }
+            ?.map { it.getActualPrice() }
+            ?.toList()
 
-        val prices: List<BigDecimal> = category.products!!
-            .filter { it.selling!! && !it.deleted!! }
-            .map { CommonFunctions.getActualPrice(it) }
-
-        val min: BigDecimal = if (prices.isNotEmpty()) prices.min() else category.minPrice
-        val max: BigDecimal = if (prices.isNotEmpty()) prices.max() else category.maxPrice
-        val average: BigDecimal = CommonFunctions.getAverage(mutableListOf(min, max))
+        val min: BigDecimal? = prices?.min()
+        val max: BigDecimal? = prices?.max()
+        val average: BigDecimal? = ExtensionFunctions.getAverage(min, max)
 
         categoryRepo.save(category.apply {
-            minPrice = min
-            maxPrice = max
-            averagePrice = average
-            minAveragePrice = CommonFunctions.getAverage(mutableListOf(min, average))
-            maxAveragePrice = CommonFunctions.getAverage(mutableListOf(average, max))
+            min?.let { minPrice = it }
+            max?.let { minPrice = it }
+            average?.let { averagePrice = it }
+            ExtensionFunctions.getAverage(min, average)?.let { minAveragePrice = it }
+            ExtensionFunctions.getAverage(average, max)?.let { maxAveragePrice = it }
         })
         log.info("Updated category with name - $name")
     }
 
     override fun findEntityById(name: String): Category = categoryRepo.findByName(name)
         .orElseThrow { ContentNotFoundException("Category with name - $name not found") }
+
+    override fun findAll(): List<CategoryInfoResponse> =
+        categoryRepo.findAll().map { categoryMapper.toInfoResponse(it) }
 }
