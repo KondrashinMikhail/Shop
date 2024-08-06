@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://database:5435/shop
+    username: shop
+    password: 60b3d257-5652-46aa-a33f-54c6b2882f48
+minio:
+  endpoint: http://filestorage:9000
+  access-key: minio_admin
+  secret-key: 8e8271e6-8378-4f77-a748-d080b9a25599

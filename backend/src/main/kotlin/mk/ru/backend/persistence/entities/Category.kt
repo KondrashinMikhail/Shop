@@ -9,7 +9,7 @@ import java.math.BigDecimal
 @Entity
 data class Category(
     @Id
-    var name: String? = null,
+    var name: String,
     @Column(nullable = false)
     var minPrice: BigDecimal = BigDecimal.ZERO,
     @Column(nullable = false)

@@ -1,9 +1,9 @@
 package mk.ru.backend.services.product
 
-import java.util.*
+import java.util.UUID
 import mk.ru.backend.persistence.entities.AppUser
 import mk.ru.backend.persistence.entities.Product
-import mk.ru.backend.services.criteria.conditions.Condition
+import mk.ru.backend.criteria.conditions.Condition
 import mk.ru.backend.web.requests.product.ProductCreateRequest
 import mk.ru.backend.web.requests.product.ProductUpdateRequest
 import mk.ru.backend.web.responses.product.ProductCreateResponse
@@ -23,7 +23,7 @@ interface ProductService {
 
     fun findById(id: UUID): ProductInfoResponse
     fun create(productCreateRequest: ProductCreateRequest): ProductCreateResponse
-    fun update(productUpdateRequest: ProductUpdateRequest): ProductUpdateResponse
+    fun update(id: UUID, productUpdateRequest: ProductUpdateRequest): ProductUpdateResponse
     fun sell(id: UUID): ProductInfoResponse
     fun unsell(id: UUID): ProductInfoResponse
     fun delete(id: UUID)

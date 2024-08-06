@@ -1,4 +1,4 @@
-package mk.ru.backend.properties
+package mk.ru.backend.configurations.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

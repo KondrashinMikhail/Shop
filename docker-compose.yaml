@@ -1,27 +1,36 @@
 services:
-#  database:
-#    container_name: database
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#    volumes:
-#      - database:/var/lib/postgresql/data
-#    ports:
-#      - "5435:5432"
-#    restart: unless-stopped
+  database:
+    container_name: database
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: 60b3d257-5652-46aa-a33f-54c6b2882f48
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
   filestorage:
     container_name: filestorage
     image: minio/minio:latest
     environment:
       MINIO_ROOT_USER: minio_admin
-      MINIO_ROOT_PASSWORD: minio_admin
+      MINIO_ROOT_PASSWORD: 8e8271e6-8378-4f77-a748-d080b9a25599
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
       - filestorage:/data
     command: server --console-address ":9001" /data/
+    restart: unless-stopped
+
+  backend:
+    container_name: backend
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8085:8085"
     restart: unless-stopped
 volumes:
   database:

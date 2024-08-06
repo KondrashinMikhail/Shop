@@ -18,13 +18,13 @@ import org.hibernate.annotations.CreationTimestamp
 data class AppUser(
     @Id
     @Pattern(regexp = Patterns.LOGIN_PATTERN)
-    var login: String? = null,
+    var login: String,
     @Column(nullable = false)
     @Pattern(regexp = Patterns.PASSWORD_PATTERN)
-    var password: String? = null,
+    var password: String,
     @Column(nullable = false, unique = true)
     @Pattern(regexp = Patterns.MAIL_PATTERN)
-    var mail: String? = null,
+    var mail: String,
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var role: AppUserRole = AppUserRole.USER,
@@ -32,9 +32,9 @@ data class AppUser(
     var blocked: Boolean = false,
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    var registrationDate: LocalDate? = LocalDate.now(),
+    var registrationDate: LocalDate,
     @OneToMany(targetEntity = Product::class, mappedBy = "owner", fetch = FetchType.LAZY)
     var products: List<Product>? = null,
     @OneToOne(targetEntity = Wallet::class, fetch = FetchType.LAZY)
-    var wallet: Wallet? = null
+    var wallet: Wallet?
 )

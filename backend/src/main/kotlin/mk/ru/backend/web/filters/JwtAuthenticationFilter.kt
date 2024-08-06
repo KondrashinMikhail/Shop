@@ -3,7 +3,7 @@ package mk.ru.backend.web.filters
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import mk.ru.backend.properties.JwtProperties
+import mk.ru.backend.configurations.properties.JwtProperties
 import mk.ru.backend.services.token.TokenService
 import mk.ru.backend.services.user.AppUserDetailsService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

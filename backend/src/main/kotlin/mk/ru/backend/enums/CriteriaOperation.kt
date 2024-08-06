@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Predicate
-import mk.ru.backend.services.criteria.specifications.PredicateSpecification
+import mk.ru.backend.criteria.specifications.PredicateSpecification
 
 enum class CriteriaOperation(
     private val criteriaOperation: (PredicateSpecification<Any>, Expression<Any>, Any, CriteriaBuilder) -> Predicate

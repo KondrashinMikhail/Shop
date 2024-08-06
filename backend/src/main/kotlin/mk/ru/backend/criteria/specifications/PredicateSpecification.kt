@@ -1,4 +1,4 @@
-package mk.ru.backend.services.criteria.specifications
+package mk.ru.backend.criteria.specifications
 
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression

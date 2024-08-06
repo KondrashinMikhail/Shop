@@ -18,8 +18,4 @@ object Patterns {
      * По крайней мере одну заглавную букву,
      * */
     const val LOGIN_PATTERN: String = "^(?=.*[A-Z])(?=.*[a-z]).+\$"
-
-    val mailRegex = Regex(MAIL_PATTERN)
-    val passwordRegex = Regex(PASSWORD_PATTERN)
-    val loginRegex = Regex(LOGIN_PATTERN)
 }

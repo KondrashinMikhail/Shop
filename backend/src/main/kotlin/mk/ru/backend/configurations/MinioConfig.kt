@@ -1,7 +1,7 @@
 package mk.ru.backend.configurations
 
 import io.minio.MinioClient
-import mk.ru.backend.properties.MinioProperties
+import mk.ru.backend.configurations.properties.MinioProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

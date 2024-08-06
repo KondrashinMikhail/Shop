@@ -1,8 +1,8 @@
-package mk.ru.backend.services.criteria.conditions
+package mk.ru.backend.criteria.conditions
 
 import java.time.LocalDate
 import mk.ru.backend.enums.CriteriaOperation
-import mk.ru.backend.services.criteria.specifications.LocalDatePredicateSpecification
+import mk.ru.backend.criteria.specifications.LocalDatePredicateSpecification
 
 data class LocalDateCondition(
     override val field: String,

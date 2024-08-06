@@ -3,8 +3,8 @@ package mk.ru.backend.services.token
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import java.util.*
-import mk.ru.backend.properties.JwtProperties
+import java.util.Date
+import mk.ru.backend.configurations.properties.JwtProperties
 import mk.ru.backend.enums.TokenType
 import mk.ru.backend.exceptions.TokenException
 import mk.ru.backend.services.user.AppUserDetailsService

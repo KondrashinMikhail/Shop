@@ -1,8 +1,8 @@
 package mk.ru.backend
 
-import mk.ru.backend.properties.JwtProperties
-import mk.ru.backend.properties.MinioProperties
-import mk.ru.backend.properties.PercentsProperties
+import mk.ru.backend.configurations.properties.JwtProperties
+import mk.ru.backend.configurations.properties.MinioProperties
+import mk.ru.backend.configurations.properties.PercentsProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

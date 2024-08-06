@@ -8,7 +8,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UuidGenerator
 
@@ -17,15 +17,15 @@ data class PriceHistory(
     @Id
     @UuidGenerator
     var id: UUID? = null,
-    @Column(nullable = false)
-    var price: BigDecimal? = BigDecimal.ZERO,
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false, insertable = false)
+    var price: BigDecimal,
+    @Column(nullable = false, updatable = false, insertable = false)
     @CreationTimestamp
-    var date: LocalDateTime? = LocalDateTime.now(),
+    var date: LocalDateTime,
     @ManyToOne(targetEntity = Product::class, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    var product: Product? = null,
+    @JoinColumn(nullable = false, updatable = false, insertable = false)
+    var product: Product,
     @ManyToOne(targetEntity = AppUser::class, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    var appUser: AppUser? = null,
+    @JoinColumn(nullable = false, updatable = false, insertable = false)
+    var appUser: AppUser
 )

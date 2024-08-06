@@ -11,10 +11,9 @@ import java.io.OutputStream
 import java.util.UUID
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import mk.ru.backend.configurations.properties.MinioProperties
 import mk.ru.backend.exceptions.ValidationException
-import mk.ru.backend.properties.MinioProperties
 import mk.ru.backend.services.product.ProductService
-import mk.ru.backend.utils.CommonFunctions
 import org.apache.commons.io.IOUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -44,8 +43,7 @@ class FilestorageServiceMinioImpl(
     override fun uploadFile(productId: UUID, file: MultipartFile) {
         val filename: String = file.originalFilename!!
 
-        if (listOf("png", "jpg", "jpeg", "webp").contains(filename.split('.').last().lowercase()))
-            throw ValidationException("File is not a photo")
+        if (!file.contentType!!.contains("image")) throw ValidationException("File is not a photo")
 
         productService.checkProductExists(productId)
 
@@ -56,12 +54,7 @@ class FilestorageServiceMinioImpl(
             PutObjectArgs.builder()
                 .userMetadata(metadata)
                 .bucket(minioProperties.productsBucketName)
-                .`object`(
-                    CommonFunctions.getFilestoragePath(
-                        filename = filename,
-                        productId = productId
-                    )
-                )
+                .`object`("$productId/$filename")
                 .stream(content.inputStream(), content.size.toLong(), -1)
                 .build()
         )

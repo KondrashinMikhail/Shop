@@ -3,8 +3,8 @@ package mk.ru.backend.services.wallet
 import jakarta.transaction.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.*
-import mk.ru.backend.properties.PercentsProperties
+import java.util.UUID
+import mk.ru.backend.configurations.properties.PercentsProperties
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.exceptions.ContentNotFoundException
 import mk.ru.backend.exceptions.SoftDeletionException
@@ -16,7 +16,7 @@ import mk.ru.backend.persistence.entities.Wallet
 import mk.ru.backend.persistence.repositories.WalletRepo
 import mk.ru.backend.services.outerremittance.OuterRemittanceService
 import mk.ru.backend.utils.AppUserInfo
-import mk.ru.backend.utils.CommonFunctions
+import mk.ru.backend.utils.ExtensionFunctions.getPercent
 import mk.ru.backend.web.responses.wallet.WalletInfoResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -33,34 +33,40 @@ class WalletServiceImpl(
 
     override fun save(wallet: Wallet): Wallet = walletRepo.save(wallet)
 
+    @Transactional
     override fun create(owner: AppUser): Wallet {
-        val savedWallet: Wallet = walletRepo.save(Wallet(owner = owner))
+        val savedWallet: Wallet = walletRepo.save(
+            Wallet(
+                owner = owner,
+                lastModifiedDate = LocalDateTime.now(),
+            )
+        )
         log.info("Created wallet with id - ${savedWallet.id} for user - ${owner.login}")
         return savedWallet
     }
 
     @Transactional
     override fun getFromBalance(transaction: Transaction, wallet: Wallet) {
-        AppUserInfo.checkAccessAllowed(wallet.owner?.login!!)
-        val amount: BigDecimal = transaction.amount!! + transaction.feeAmount!!
+        AppUserInfo.checkAccessAllowed(wallet.owner.login)
+        val amount: BigDecimal = transaction.amount + transaction.feeAmount
         if (wallet.balance.minus(amount) <= BigDecimal.ZERO)
             throw ValidationException("Can not write off due to lack of funds")
 
         walletRepo.save(wallet.apply {
-            balance = wallet.balance.minus(amount)
+            balance -= amount
             lastModifiedDate = LocalDateTime.now()
-            transactionsRecipient = wallet.transactionsRecipient!!.plus(transaction)
+            transactionsRecipient = transactionsRecipient?.plus(transaction)
         })
         log.info("Got $amount from wallet - ${wallet.id}")
     }
 
     @Transactional
     override fun addToBalance(transaction: Transaction, wallet: Wallet) {
-        val amount: BigDecimal = transaction.amount!!
+        val amount: BigDecimal = transaction.amount
         walletRepo.save(wallet.apply {
-            balance = wallet.balance.plus(amount)
+            balance += amount
             lastModifiedDate = LocalDateTime.now()
-            transactionsRecipient = wallet.transactionsRecipient!!.plus(transaction)
+            transactionsRecipient = transactionsRecipient?.plus(transaction)
         })
         log.info("Added $amount to wallet - ${wallet.id}")
     }
@@ -70,9 +76,9 @@ class WalletServiceImpl(
         val wallets: List<Wallet> =
             walletRepo.findAllByLastModifiedDateAfterAndBalanceNot(LocalDateTime.now().minusDays(1))
         wallets.forEach {
-            val bonusAmount: BigDecimal = CommonFunctions.getPercent(it.balance, percentsProperties.bonus)
+            val bonusAmount: BigDecimal = it.balance.getPercent(percentsProperties.bonus)
             outerRemittanceService.create(bonusAmount, OuterRemittanceType.BONUS, it)
-            walletRepo.save(it.apply { balance = balance.plus(bonusAmount) })
+            walletRepo.save(it.apply { balance += bonusAmount })
         }
         log.info("Sent bonuses on ${wallets.size} wallets")
     }
@@ -86,8 +92,7 @@ class WalletServiceImpl(
     override fun findEntityById(id: UUID): Wallet {
         val wallet: Wallet =
             walletRepo.findById(id).orElseThrow { ContentNotFoundException("Wallet with id - $id not found") }
-        if (wallet.owner!!.blocked)
-            throw SoftDeletionException("Wallet with id - $id not found")
+        if (wallet.owner.blocked) throw SoftDeletionException("Wallet with id - $id not found")
         return wallet
     }
 }

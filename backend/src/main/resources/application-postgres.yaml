@@ -4,7 +4,6 @@ spring:
     username: postgres
     password: postgres
 minio:
-  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
-  access-key: ${MINIO_ACCESS_KEY:minio_admin}
-  secret-key: ${MINIO_SECRET_KEY:minio_admin}
-  products-bucket-name: ${PRODUCTS_BUCKET_NAME:products}
+  endpoint: http://localhost:9000
+  access-key: minio_admin
+  secret-key: 8e8271e6-8378-4f77-a748-d080b9a25599

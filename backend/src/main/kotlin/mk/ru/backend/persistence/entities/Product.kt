@@ -8,7 +8,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
@@ -20,24 +20,24 @@ data class Product(
     @UuidGenerator
     var id: UUID? = null,
     @Column(nullable = false)
-    var name: String? = null,
+    var name: String,
     @Column(nullable = true)
     var description: String? = null,
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, insertable = false)
     @CreationTimestamp
-    var registrationDate: LocalDate? = LocalDate.now(),
+    var registrationDate: LocalDate,
     @Column(nullable = false)
-    var deleted: Boolean? = false,
+    var deleted: Boolean = false,
     @Column(nullable = false)
-    var selling: Boolean? = false,
+    var selling: Boolean = false,
     @OneToMany(targetEntity = PriceHistory::class, mappedBy = "product")
     @Fetch(FetchMode.JOIN)
-    var priceHistory: List<PriceHistory>? = null,
+    var priceHistory: List<PriceHistory> = listOf(),
     @ManyToOne(targetEntity = Category::class)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(nullable = false)
-    var category: Category? = null,
+    var category: Category,
     @ManyToOne(targetEntity = AppUser::class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    var owner: AppUser? = null,
+    var owner: AppUser
 )

@@ -1,54 +1,57 @@
-package mk.ru.backend.services.criteria.specifications
+package mk.ru.backend.criteria.specifications
 
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Expression
 import jakarta.persistence.criteria.Predicate
-import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
 
-class BigDecimalPredicateSpecification : PredicateSpecification<BigDecimal> {
+class LocalDatePredicateSpecification : PredicateSpecification<LocalDate> {
     override fun equalPredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate = criteriaBuilder.equal(expression, value)
+    ): Predicate = criteriaBuilder.equal(criteriaBuilder.function("date", LocalDateTime::class.java, expression), value)
+
 
     override fun notEqualPredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
     ): Predicate = criteriaBuilder.notEqual(expression, value)
 
+
     override fun greaterThanPredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
     ): Predicate = criteriaBuilder.greaterThan(expression, value)
 
+
     override fun greaterThanOrEqualPredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
     ): Predicate = criteriaBuilder.greaterThanOrEqualTo(expression, value)
 
+
     override fun lessThanPredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
     ): Predicate = criteriaBuilder.lessThan(expression, value)
 
+
     override fun lessThanOrEqualPredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
     ): Predicate = criteriaBuilder.lessThanOrEqualTo(expression, value)
 
+
     override fun likePredicate(
-        expression: Expression<BigDecimal>,
-        value: BigDecimal,
+        expression: Expression<LocalDate>,
+        value: LocalDate,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate = criteriaBuilder.between(
-        expression,
-        value.multiply(BigDecimal.valueOf(0.9)),
-        value.multiply(BigDecimal.valueOf(1.1))
-    )
+    ): Predicate = criteriaBuilder.between(expression, value.minusDays(1), value.plusDays(1))
 }

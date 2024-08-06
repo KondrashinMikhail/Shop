@@ -1,6 +1,7 @@
 plugins {
     id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.5"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.5.21"
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
 }
@@ -8,11 +9,8 @@ plugins {
 group = "mk.ru"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+kotlin.compilerOptions.freeCompilerArgs.addAll("-Xjsr305=strict")
 
 repositories {
     mavenCentral()
@@ -36,7 +34,6 @@ dependencies {
 
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
-
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
@@ -45,12 +42,6 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
     implementation("io.minio:minio:8.5.11")
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
 }
 
 tasks.withType<Test> {

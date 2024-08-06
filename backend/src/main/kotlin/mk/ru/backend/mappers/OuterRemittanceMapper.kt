@@ -9,7 +9,7 @@ class OuterRemittanceMapper {
     fun toWalletResponse(outerRemittance: OuterRemittance): WalletOuterRemittanceResponse =
         WalletOuterRemittanceResponse(
             id = outerRemittance.id!!,
-            date = outerRemittance.date!!,
-            amount = outerRemittance.amount!!,
+            date = outerRemittance.date,
+            amount = outerRemittance.amount,
         )
 }

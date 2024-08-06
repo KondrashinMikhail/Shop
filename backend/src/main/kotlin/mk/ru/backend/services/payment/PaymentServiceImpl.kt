@@ -2,8 +2,8 @@ package mk.ru.backend.services.payment
 
 import jakarta.transaction.Transactional
 import java.math.BigDecimal
-import java.util.*
-import mk.ru.backend.properties.PercentsProperties
+import java.util.UUID
+import mk.ru.backend.configurations.properties.PercentsProperties
 import mk.ru.backend.enums.OuterRemittanceType
 import mk.ru.backend.exceptions.AccessDeniedException
 import mk.ru.backend.exceptions.SoftDeletionException
@@ -21,7 +21,8 @@ import mk.ru.backend.services.transaction.TransactionService
 import mk.ru.backend.services.user.AppUserService
 import mk.ru.backend.services.wallet.WalletService
 import mk.ru.backend.utils.AppUserInfo
-import mk.ru.backend.utils.CommonFunctions
+import mk.ru.backend.utils.ExtensionFunctions.getActualPrice
+import mk.ru.backend.utils.ExtensionFunctions.getPercent
 import mk.ru.backend.web.requests.outerremittance.OuterRemittanceCreateRequest
 import mk.ru.backend.web.responses.payment.PaymentInfoResponse
 import org.slf4j.Logger
@@ -48,22 +49,24 @@ class PaymentServiceImpl(
         outerRemittanceType: OuterRemittanceType
     ) {
         val wallet: Wallet = walletService.findEntityById(outerRemittanceCreateRequest.walletId)
-        AppUserInfo.checkAccessAllowed(wallet.owner!!.login)
+        AppUserInfo.checkAccessAllowed(wallet.owner.login)
 
         if (outerRemittanceType == OuterRemittanceType.OUTGOING) {
             if (wallet.balance.minus(outerRemittanceCreateRequest.amount) < BigDecimal.ZERO)
                 throw ValidationException("There are not enough funds in wallet")
-            else wallet.balance = wallet.balance.minus(outerRemittanceCreateRequest.amount)
+            else wallet.apply { balance -= outerRemittanceCreateRequest.amount }
         } else if (outerRemittanceType == OuterRemittanceType.INCOMING)
-            wallet.balance = wallet.balance.plus(outerRemittanceCreateRequest.amount)
+            wallet.apply { balance += outerRemittanceCreateRequest.amount }
 
-        wallet.outerRemittances = wallet.outerRemittances!!.plus(
-            outerRemittanceService.create(
-                outerRemittanceCreateRequest.amount,
-                outerRemittanceType,
-                wallet
+        wallet.apply {
+            outerRemittances = outerRemittances?.plus(
+                outerRemittanceService.create(
+                    outerRemittanceCreateRequest.amount,
+                    outerRemittanceType,
+                    wallet
+                )
             )
-        )
+        }
 
         walletService.save(wallet)
     }
@@ -71,20 +74,21 @@ class PaymentServiceImpl(
     @Transactional
     override fun buyProduct(productId: UUID): PaymentInfoResponse {
         val product: Product = productService.findEntityById(id = productId, deletionCheck = true)
-        val productOwner: AppUser = product.owner!!
+        val productOwner: AppUser = product.owner
         val recipientWallet: Wallet = productOwner.wallet!!
         val authenticatedUser: AppUser = appUserService.getAuthenticated(blockedCheck = true)
         val senderWallet: Wallet = authenticatedUser.wallet!!
 
-        val productPrice = CommonFunctions.getActualPrice(product)
-        val feeAmount: BigDecimal = CommonFunctions.getPercent(productPrice, percentsProperties.fee)
+        val productPrice = product.getActualPrice()
+        val feeAmount: BigDecimal = productPrice.getPercent(percentsProperties.fee)
 
-        if (productOwner.login == authenticatedUser.login)
-            throw AccessDeniedException("Authenticated user is already owner of this product")
-        if (productOwner.blocked)
-            throw SoftDeletionException("Owner of this product is blocked")
-        if (!product.selling!!)
-            throw ValidationException("Product is not selling")
+        when {
+            productOwner.login == authenticatedUser.login ->
+                throw AccessDeniedException("Authenticated user is already owner of this product")
+
+            productOwner.blocked -> throw SoftDeletionException("Owner of this product is blocked")
+            !product.selling -> throw ValidationException("Product is not selling")
+        }
 
         val savedTransaction: Transaction = transactionService.create(
             senderWallet = senderWallet,
