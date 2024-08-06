@@ -43,10 +43,7 @@ class FilestorageServiceMinioImpl(
     override fun uploadFile(productId: UUID, file: MultipartFile) {
         val filename: String = file.originalFilename!!
 
-//        TODO("Попробовать с file.contentType 'image'")
-
-        if (!listOf("png", "jpg", "jpeg", "webp").contains(filename.split('.').last().lowercase()))
-            throw ValidationException("File is not a photo")
+        if (!file.contentType!!.contains("image")) throw ValidationException("File is not a photo")
 
         productService.checkProductExists(productId)
 
